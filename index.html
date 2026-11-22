@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Airdrop App - Test Version</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#0f0f0f;color:white;text-align:center;padding:20px}
+.card{background:#1e1e1e;padding:20px;border-radius:15px;margin:10px}
+button{background:#00ff88;color:black;border:none;padding:15px 25px;border-radius:10px;font-size:18px;font-weight:bold;width:100%;margin-top:10px}
+input{padding:12px;width:90%;border-radius:10px;border:none;margin-top:10px;font-size:16px}
+</style>
+</head>
+<body>
+<h1>💰 MY TOKEN APP</h1>
+<p>Test Version - No Real Money</p>
+
+<div class="card">
+<h2>Your Balance</h2>
+<h1 id="tokenBal">0 MYT</h1>
+<h2 id="usdtBal">$0 USDT</h2>
+<p>Price: 1 MYT = $0.002 USDT</p>
+</div>
+
+<div class="card">
+<h2>1. MINE (Like Pi)</h2>
+<p>Press every 10 seconds to test</p>
+<button onclick="mine()">⛏️ MINE +10 MYT</button>
+<p id="mineMsg"></p>
+</div>
+
+<div class="card">
+<h2>2. SWAP INSIDE APP</h2>
+<p>Swap your mined token to USDT inside app</p>
+<input id="swapAmt" type="number" placeholder="How many MYT you want swap? e.g 100">
+<button onclick="swap()">🔄 SWAP TO USDT</button>
+<p id="swapMsg"></p>
+</div>
+
+<div class="card">
+<h2>3. WITHDRAW</h2>
+<button onclick="withdraw()">💵 WITHDRAW USDT</button>
+<p id="wdMsg"></p>
+</div>
+
+<script>
+// Save balance for phone
+let tokens = Number(localStorage.getItem('tokens') || 0);
+let usdt = Number(localStorage.getItem('usdt') || 0);
+let lastMine = Number(localStorage.getItem('lastMine') || 0);
+
+function update(){
+  document.getElementById('tokenBal').innerText = tokens + ' MYT';
+  document.getElementById('usdtBal').innerText = '$' + usdt.toFixed(3) + ' USDT';
+  localStorage.setItem('tokens', tokens);
+  localStorage.setItem('usdt', usdt);
+}
+function mine(){
+  let now = Date.now();
+  if(now - lastMine < 10000){
+    document.getElementById('mineMsg').innerText = 'Wait small, come back in 10 secs...';
+    return;
+  }
+  tokens += 10;
+  lastMine = now;
+  localStorage.setItem('lastMine', lastMine);
+  document.getElementById('mineMsg').innerText = 'You don mine +10 MYT! 🎉';
+  update();
+}
+function swap(){
+  let amt = Number(document.getElementById('swapAmt').value);
+  if(!amt || amt > tokens){
+    document.getElementById('swapMsg').innerText = 'You no get that much token!';
+    return;
+  }
+  let getUsdt = amt * 0.002;
+  tokens -= amt;
+  usdt += getUsdt;
+  document.getElementById('swapMsg').innerText = 'Success! You swap ' + amt + ' MYT = $' + getUsdt.toFixed(3) + ' USDT';
+  update();
+}
+function withdraw(){
+  if(usdt <= 0){
+    document.getElementById('wdMsg').innerText = 'You no get USDT to withdraw yet, go mine first!';
+    return;
+  }
+  document.getElementById('wdMsg').innerText = 'For real app, $' + usdt.toFixed(3) + ' go enter your Binance wallet. For test, e don show say e work!';
+}
+update();
+</script>
+</body>
+  </html>
