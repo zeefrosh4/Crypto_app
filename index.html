@@ -61,7 +61,6 @@ Total Supply na 100M only, so as more people join, ZFH go become scarce, price f
 <div class="card"><h3>❓ FAQ</h3><p class="small"><b>Is it free?</b> Yes, 100% free.<br><b>How do I earn?</b> Mine every 8 hours (80 ZFH), do tasks, refer friends (+50 ZFH).<br><b>When can I withdraw?</b> After you swap to $1 USDT, request withdraw, Admin go approve.<br><b>Do I need to pay?</b> Never! If anybody ask you money for ZEEFROSH, na scam.</p></div>
 
 <button class="btn" onclick="goAuth()">START MINING NOW ⛏️</button>
-<p class="small" style="text-align:center">Admin? <b style="color:#FFD700;cursor:pointer" onclick="openAdminLogin()">Admin Panel</b></p>
 </div>
 
 <!-- AUTH -->
@@ -94,7 +93,6 @@ Total Supply na 100M only, so as more people join, ZFH go become scarce, price f
 
 <!-- ADMIN -->
 <div id="adminPage" style="display:none;max-width:520px;margin:auto;padding:16px">
-<h2>👑 ZEEFROSH ADMIN</h2><p class="small">Password: <b class="gold">zeefrosh123</b></p>
 <div id="adminLogin"><input id="adminPass" type="password" placeholder="Admin Password"><button class="btn" onclick="adminLogin()">ENTER ADMIN</button><button class="btn2" style="margin-top:10px;width:100%" onclick="closeAdmin()">Back</button></div>
 <div id="adminMain" style="display:none">
 <div class="card"><b>📊 Stats</b><p class="small" id="adminStats"></p></div>
@@ -131,12 +129,16 @@ function withdraw(){let addr=document.getElementById('walletAddr').value; if(!ad
 function renderMyWd(){let el=document.getElementById('myWd'); if(!el) return; let mine=DB.withdraws.filter(w=>w.email==user.email); el.innerHTML=mine.map(w=>`<p class="small">${w.amount.toFixed(2)} USDT - ${w.status} - ${w.time}</p>`).join('')||'No requests yet';}
 function openAdminLogin(){document.getElementById('explorePage').style.display='none'; document.getElementById('authPage').style.display='none'; document.getElementById('app').style.display='none'; document.getElementById('adminPage').style.display='block';}
 function closeAdmin(){document.getElementById('adminPage').style.display='none'; if(user) showApp(); else goExplore();}
-function adminLogin(){if(document.getElementById('adminPass').value!=='zeefrosh123') return alert('Wrong password!'); document.getElementById('adminLogin').style.display='none'; document.getElementById('adminMain').style.display='block'; renderAdmin();}
+function adminLogin(){if(document.getElementById('adminPass').value!=='Habeeb09157618664') return alert('Wrong password!'); document.getElementById('adminLogin').style.display='none'; document.getElementById('adminMain').style.display='block'; renderAdmin();}
 function renderAdmin(){document.getElementById('adminStats').innerText='Users: '+DB.users.length+' • Withdraws: '+DB.withdraws.length+' • Pending Tasks: '+DB.claims.filter(c=>c.status=='pending').length; document.getElementById('adminWd').innerHTML=DB.withdraws.map((w,i)=>`<div class="task"><div><b>${w.name}</b> - ${w.email}<br>${w.amount.toFixed(2)} USDT to ${w.addr}<br><span class="small">${w.status} - ${w.time}</span></div>${w.status=='pending'?`<button class="btn2" onclick="approveWd(${i})">Approve</button><button class="btn2" onclick="rejectWd(${i})">Reject</button>`:''}</div>`).join('')||'No withdraws'; document.getElementById('adminClaims').innerHTML=DB.claims.map((c,i)=>`<div class="task"><div><b>${c.name}</b> - ${c.task}<br>+${c.reward} ZFH - ${c.status}</div>${c.status=='pending'?`<button class="btn2" onclick="approveClaim(${i})">Approve</button>`:''}</div>`).join('')||'No claims'; renderTasks();}
 function approveWd(i){DB.withdraws[i].status='approved'; saveDB(); alert('Approved! Go Binance send $'+DB.withdraws[i].amount.toFixed(2)+' to '+DB.withdraws[i].addr); renderAdmin();}
 function rejectWd(i){let w=DB.withdraws[i]; w.status='rejected'; let u=DB.users.find(x=>x.email==w.email); if(u) u.usdt+=w.amount; saveDB(); renderAdmin();}
 function approveClaim(i){let c=DB.claims[i]; c.status='approved'; let u=DB.users.find(x=>x.email==c.email); if(u) u.zfh+=c.reward; if(user && user.email==c.email) user.zfh+=c.reward; saveDB(); saveUser(); renderAdmin(); alert('Approved +'+c.reward+' ZFH');}
 function addTask(){let t=document.getElementById('taskTitle').value, r=parseInt(document.getElementById('taskReward').value), l=document.getElementById('taskLink').value; if(!t||!r) return alert('Fill title and reward'); DB.tasks.push({title:t,reward:r,link:l||'#'}); saveDB(); renderAdmin(); alert('Task added!');}
+// SECRET ADMIN ACCESS - Only via #zeefrosh-admin
+if(window.location.hash === '#zeefrosh-admin'){
+  setTimeout(()=>{ openAdminLogin(); }, 500);
+}
 if(user) showApp(); else goExplore();
 </script>
 </body>
