@@ -60,7 +60,19 @@ function complain(){let c=document.getElementById('complaint').value.trim(); if(
 function renderChat(){if(!user) return; let h=""; chats.filter(x=>x.email===user.email).forEach(c=>{h+=`<div class="chatMsg ${c.from==='admin'?'chatAdmin':''}"><b>${c.from==='admin'?'👑 ADMIN':'You'}:</b> ${c.msg}<br><span class="small">${c.time||''}</span></div>`}); document.getElementById('chatBox').innerHTML=h||"<p class='small'>No message yet.</p>";}
 function renderHistory(){document.getElementById('history').innerHTML="Pendings: "+pendings.filter(x=>x.email===user?.email).length+" | Withdraws: "+withdraws.filter(x=>x.email===user?.email).length;}
 function logout(){localStorage.removeItem('zf_user'); location.reload();}
-function openAdmin(){let e=prompt("Admin Email:"); if(e&&e.trim().toLowerCase()===ADMIN){showPage('admin'); renderAdmin();} else alert("Not Admin");}
+function openAdmin(){
+  let e=prompt("Admin Email:");
+  if(!e) return;
+  e=e.trim().toLowerCase();
+  if(e===ADMIN){
+    document.getElementById('app').style.display='block';
+    document.getElementById('auth').style.display='none';
+    showPage('admin'); renderAdmin();
+    alert("Welcome Admin!");
+  } else {
+    alert("This email no match Admin.\nYou type: "+e+"\nAdmin for code: "+ADMIN);
+  }
+}
 function addTask(){let title=document.getElementById('newTitle').value.trim(); let pay=+document.getElementById('newPay').value; let link=document.getElementById('newLink').value.trim(); if(!title||!pay||!link) return alert("Fill all"); tasks.push({id:'T'+Date.now(),title,pay,link}); save(); alert("Task added!"); renderAdmin(); renderTasks(); document.getElementById('newTitle').value=""; document.getElementById('newPay').value=""; document.getElementById('newLink').value="";}
 function deleteTask(id){tasks=tasks.filter(t=>t.id!==id); save(); renderAdmin(); renderTasks();}
 function adminReply(email){let msg=prompt("Reply to "+email+":"); if(!msg) return; chats.push({email:email,from:'admin',msg:msg,time:new Date().toLocaleString()}); save(); renderAdmin(); alert("Reply sent!");}
