@@ -3,39 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZEEFROSH</title>
+<title>ZEEFROSH - Gold Mining</title>
 <style>
-*{box-sizing:border-box} body{margin:0;font-family:Arial;background:#f1f5f9;color:#0f172a;padding-bottom:80px}
-.top{background:#0f172a;color:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.logo{font-weight:900;color:#facc15;font-size:22px} .bal{background:#facc15;color:#000;padding:7px 14px;border-radius:20px;font-weight:900}
-.page{display:none;padding:12px} .page.active{display:block}
-.card{background:#fff;padding:14px;border-radius:16px;margin-top:12px;box-shadow:0 2px 10px #0001}
-button{width:100%;padding:13px;border:0;border-radius:12px;background:#16a34a;color:#fff;font-weight:800;margin-top:8px}
-button.blue{background:#2563eb} button.red{background:#ef4444} button.dark{background:#0f172a}
-input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #cbd5e1;margin-top:8px}
-.task{border:1px solid #e2e8f0;padding:12px;border-radius:14px;margin-top:10px;background:#fff}
-.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid #ddd;z-index:20}
-.bottom div{text-align:center;font-size:12px;cursor:pointer;color:#64748b} .bottom div.active{color:#16a34a;font-weight:900}
-.adBox{background:#fff;border-radius:14px;padding:8px;margin-top:12px;text-align:center}
-.hidden{display:none} .adminDot{position:fixed;bottom:70px;right:8px;width:28px;height:28px;opacity:.15;background:#000;border-radius:50%;z-index:30}
-.currency{display:flex;gap:8px} .currency button{background:#e2e8f0;color:#000} .currency button.on{background:#0f172a;color:#facc15}
+*{box-sizing:border-box} body{margin:0;font-family:Arial;background:#0a0a00;color:#fff;padding-bottom:20px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#000} .logo{font-weight:900;font-size:26px;color:#FFD700;letter-spacing:1px} .logo span{color:#fff}
+.card{background:linear-gradient(145deg,#1a1500,#0a0a00);border:1px solid #FFD70055;padding:16px;border-radius:20px;margin:12px;box-shadow:0 0 20px #FFD70022}
+.mineCircle{width:190px;height:190px;border-radius:50%;margin:14px auto;background:radial-gradient(circle,#FFD70044,#000);border:4px solid #FFD700;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;box-shadow:0 0 30px #FFD70066}
+.mineCircle.mining{animation:pulse 1s infinite} @keyframes pulse{0%{box-shadow:0 0 10px #FFD700}50%{box-shadow:0 0 50px #FFD700}100%{box-shadow:0 0 10px #FFD700}}
+button{width:100%;padding:14px;border:0;border-radius:14px;background:#FFD700;color:#000;font-weight:900;margin-top:8px;font-size:15px} button.dark{background:#222200;color:#FFD700;border:1px solid #FFD700} button.red{background:#ef4444;color:#fff}
+input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px solid #444400;background:#111100;color:#fff;margin-top:8px}
+.task{background:#111100;border:1px solid #FFD70044;padding:12px;border-radius:14px;margin-top:10px}
+.tabs{display:flex;gap:8px;margin:12px} .tabs button{background:#222200;color:#aaa} .tabs button.on{background:#FFD700;color:#000}
+.page{display:none} .page.on{display:block}
+.adBox{background:#fff;border-radius:14px;padding:8px;margin:12px;text-align:center;color:#000}
+.adminDot{position:fixed;bottom:8px;right:8px;width:28px;height:28px;opacity:.15;background:#FFD700;border-radius:50%}
+.small{font-size:12px;color:#aaa}
+.goldText{color:#FFD700}
 </style>
 <script data-cfasync="false" src="https://bauval.org/14/5acf5ef5add7726e3d6b769a4dc7e1c8"></script>
 </head>
 <body>
+<div class="top"><div class="logo">ZEEFROSH 🥇</div><div style="background:#FFD700;color:#000;padding:6px 12px;border-radius:20px;font-weight:900">₦<span id="balNaira">0</span></div></div>
 
-<div class="top"><div class="logo">ZEEFROSH</div><div class="bal"><span id="balTop">0</span> <span id="curTop">₦</span></div></div>
-
-<!-- HOME PAGE -->
-<div id="p-home" class="page active">
-<div class="card"><h2>Welcome 👋</h2><p id="welcomeTxt">Login to start earning</p>
-<div id="authBox">
-<input id="email" placeholder="Email">
-<input id="pass" type="password" placeholder="Password">
+<div id="auth" class="card">
+<h2 class="goldText">Login / Register</h2>
+<input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password">
 <button onclick="login()">Login / Create Account</button>
-<p style="font-size:12px;color:#64748b">One Device = One Account</p>
+<p class="small">One Device = One Account • Gold Mining = Real Money</p>
 </div>
-<div class="currency"><button id="cNGN" class="on" onclick="setCur('NGN')">₦ Naira</button><button id="cUSDT" onclick="setCur('USDT')">USDT</button><button id="cUSD" onclick="setCur('USD')">$ Dollar</button></div>
+
+<div id="app" style="display:none">
+<div class="card" style="text-align:center">
+<p class="small">TOTAL GOLD BALANCE</p>
+<h1 style="margin:0;font-size:36px;color:#FFD700">₦<span id="bal">0</span></h1>
+<p class="small">≈ $<span id="balUSD">0.00</span> USDT • Hash: <span id="hash">0</span> H/s • Gold Rate: $1 = ₦1550</p>
+<div id="circle" class="mineCircle"><div style="font-size:44px">🥇</div><b id="mineStatus" class="goldText">STOPPED</b><span class="small" id="mineEarn">+₦0.00 / sec</span></div>
+<button id="mineBtn" onclick="toggleMine()">▶ START GOLD MINING</button>
+<div style="display:flex;gap:8px"><button class="dark" onclick="showPage('tasks')">📋 TASKS</button><button onclick="showPage('wallet')">💰 WITHDRAW</button></div>
+<p class="small">Mine gold, convert to Naira easily. Tasks na extra money.</p>
 </div>
 
 <div class="adBox"><b style="font-size:11px">ADVERTISEMENT</b><br>
@@ -43,94 +48,42 @@ input,select,textarea{width:100%;padding:12px;border-radius:12px;border:1px soli
 <script src="https://bauval.org/22/d09ed80446f4c280d5c08f3278e510cd"></script>
 </div>
 
-<div class="card"><h3>How it works</h3>1. Go to Tasks page<br>2. Do task, wait 20 secs<br>3. Upload proof<br>4. Admin approve, money enter<br>5. Withdraw to Naira, USDT or Dollar</div>
-</div>
+<div class="tabs"><button id="tab-tasks" class="on" onclick="showPage('tasks')">Tasks</button><button id="tab-wallet" onclick="showPage('wallet')">Wallet</button><button id="tab-support" onclick="showPage('support')">Support</button><button id="tab-profile" onclick="showPage('profile')">Profile</button></div>
 
-<!-- TASKS PAGE -->
-<div id="p-tasks" class="page">
-<h2>Available Tasks</h2>
-<p style="font-size:13px;color:#64748b">No task yet? Admin go add task soon. Check back.</p>
-<div id="tasks"></div>
-</div>
-
-<!-- WALLET PAGE -->
-<div id="p-wallet" class="page">
-<div class="card"><h2>Wallet</h2><h1><span id="bal2">0</span> <span id="cur2">₦</span></h1><p>Choose currency for withdraw</p>
-<div class="currency"><button id="wNGN" class="on" onclick="setWithdrawCur('NGN')">₦ Naira</button><button id="wUSDT" onclick="setWithdrawCur('USDT')">USDT</button><button id="wUSD" onclick="setWithdrawCur('USD')">$ Dollar</button></div>
-<div id="wNaira"><input id="wAmt" type="number" placeholder="Amount ₦"><select id="wBank"><option>Opay</option><option>Palmpay</option><option>Moniepoint</option><option>First Bank</option><option>Access Bank</option><option>GTBank</option></select><input id="wAcc" placeholder="Account Number"><input id="wName" placeholder="Account Name"></div>
-<div id="wCrypto" class="hidden"><input id="wAmt2" type="number" placeholder="Amount"><input id="wWallet" placeholder="Wallet Address - Binance / Trust Wallet"><input id="wNetwork" placeholder="Network e.g TRC20 / BEP20"></div>
-<button onclick="withdraw()">Request Withdraw</button>
-</div>
-<div class="card"><h3>History</h3><div id="history"></div></div>
-</div>
-
-<!-- SUPPORT PAGE -->
-<div id="p-support" class="page">
-<div class="card"><h2>Complaint / Support</h2><textarea id="complaint" placeholder="Write your complaint..."></textarea><button onclick="complain()" class="blue">Send to Admin</button><p style="font-size:12px">Admin Email: habeebadekunlesamson@gmail.com</p></div>
-</div>
-
-<!-- PROFILE PAGE -->
-<div id="p-profile" class="page">
-<div class="card"><h2>Profile</h2><p id="pEmail"></p><p>Device ID: <b id="pDevice"></b></p><button onclick="logout()" class="red">Logout</button></div>
-</div>
-
-<!-- ADMIN PAGE - HIDDEN -->
-<div id="p-admin" class="page">
-<div class="card"><h2>ADMIN PANEL</h2><p>Admin: habeebadekunlesamson@gmail.com</p>
-<h3>Add New Task (You Control)</h3>
-<input id="newTitle" placeholder="Task Title e.g Follow TikTok">
-<input id="newPay" type="number" placeholder="Pay Amount e.g 150">
-<input id="newLink" placeholder="Task Link https://...">
-<select id="newCur"><option value="NGN">Pay in ₦ Naira</option><option value="USDT">Pay in USDT</option><option value="USD">Pay in $ Dollar</option></select>
-<button onclick="addTask()">+ Add Task</button>
-<h3>All Tasks</h3><div id="adminTasks"></div>
-<h3>Pending Approvals</h3><div id="adminList"></div>
-<h3>Withdraw Requests</h3><div id="adminWithdraws"></div>
-<h3>Complaints</h3><div id="adminComplaints"></div>
-</div>
-</div>
-
-<div class="bottom">
-<div class="active" onclick="nav('home',this)">🏠<br>Home</div>
-<div onclick="nav('tasks',this)">📋<br>Tasks</div>
-<div onclick="nav('wallet',this)">💰<br>Wallet</div>
-<div onclick="nav('support',this)">💬<br>Support</div>
-<div onclick="nav('profile',this)">👤<br>Profile</div>
+<div id="page-tasks" class="page on"><div class="card"><h3 class="goldText">📋 Tasks</h3><p class="small">No task yet — Admin go add task. Na you be Admin.</p><div id="tasks"></div></div></div>
+<div id="page-wallet" class="page"><div class="card"><h3 class="goldText">💰 Withdraw / Convert</h3><p>Balance: ₦<span id="bal3">0</span> | $<span id="balUSD2">0</span></p><select id="wCur" onchange="toggleW()"><option value="NGN">Withdraw in ₦ Naira - Opay / Bank</option><option value="USDT">Withdraw in USDT - Binance / Trust Wallet</option><option value="USD">Withdraw in $ Dollar</option></select><input id="wAmt" type="number" placeholder="Amount"><div id="wNaira"><select id="wBank"><option>Opay</option><option>Palmpay</option><option>Moniepoint</option><option>First Bank</option><option>Access Bank</option><option>GTBank</option></select><input id="wAcc" placeholder="Account Number"><input id="wName" placeholder="Account Name"></div><div id="wCrypto" style="display:none"><input id="wWallet" placeholder="Wallet Address"><input id="wNetwork" placeholder="Network e.g TRC20"></div><button onclick="withdraw()">Request Withdraw</button><div id="history" style="margin-top:10px"></div></div></div>
+<div id="page-support" class="page"><div class="card"><h3 class="goldText">💬 Complaint / Support</h3><textarea id="complaint" placeholder="Write complaint..."></textarea><button onclick="complain()">Send to Admin</button><p class="small">Admin: habeebadekunlesamson@gmail.com</p></div></div>
+<div id="page-profile" class="page"><div class="card"><h3 class="goldText">👤 Profile</h3><p id="pEmail"></p><p class="small">Device: <span id="pDevice"></span></p><button class="red" onclick="logout()">Logout</button></div></div>
+<div id="page-admin" class="page"><div class="card"><h3 class="goldText">ADMIN PANEL - GOLD</h3><input id="newTitle" placeholder="Task Title e.g Follow TikTok"><input id="newPay" type="number" placeholder="Pay ₦ e.g 150"><input id="newLink" placeholder="Task Link https://..."><button onclick="addTask()">+ Add Task</button><h4>All Tasks</h4><div id="adminTasks"></div><h4>Pending Approvals</h4><div id="adminList"></div><h4>Withdraws</h4><div id="adminWithdraws"></div><h4>Complaints</h4><div id="adminComplaints"></div></div></div>
 </div>
 <div class="adminDot" onclick="openAdmin()"></div>
-
 <script>
-const ADMIN="habeebadekunlesamson@gmail.com";
-let cur=localStorage.getItem('zf_cur')||'NGN'; let wCur='NGN';
+const ADMIN="habeebadekunlesamson@gmail.com"; const RATE=1550;
 let device=localStorage.getItem('zf_device')||('DEV-'+Math.random().toString(36).slice(2,10).toUpperCase()); localStorage.setItem('zf_device',device);
-let user=JSON.parse(localStorage.getItem('zf_user')||'null');
-let allUsers=JSON.parse(localStorage.getItem('zf_allUsers')||'{}');
-let tasks=JSON.parse(localStorage.getItem('zf_tasks')||'[]'); // NO AUTOMATIC TASKS - ADMIN ADDS
-let pendings=JSON.parse(localStorage.getItem('zf_pendings')||'[]');
-let complaints=JSON.parse(localStorage.getItem('zf_complaints')||'[]');
-let withdraws=JSON.parse(localStorage.getItem('zf_withdraws')||'[]');
-function save(){localStorage.setItem('zf_allUsers',JSON.stringify(allUsers));localStorage.setItem('zf_tasks',JSON.stringify(tasks));localStorage.setItem('zf_pendings',JSON.stringify(pendings));localStorage.setItem('zf_complaints',JSON.stringify(complaints));localStorage.setItem('zf_withdraws',JSON.stringify(withdraws)); if(user) localStorage.setItem('zf_user',JSON.stringify(user)); localStorage.setItem('zf_cur',cur);}
-function nav(p,el){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.getElementById('p-'+p).classList.add('active'); document.querySelectorAll('.bottom div').forEach(x=>x.classList.remove('active')); if(el) el.classList.add('active');}
-function setCur(c){cur=c; localStorage.setItem('zf_cur',c); updateCurUI(); showApp();}
-function setWithdrawCur(c){wCur=c; document.querySelectorAll('#p-wallet .currency button').forEach(b=>b.classList.remove('on')); document.getElementById('w'+c).classList.add('on'); document.getElementById('wNaira').classList.toggle('hidden',c!=='NGN'); document.getElementById('wCrypto').classList.toggle('hidden',c==='NGN');}
-function updateCurUI(){let s=cur==='NGN'?'₦':cur==='USDT'?'USDT':'$'; document.getElementById('curTop').innerText=s; document.getElementById('cur2').innerText=s; document.getElementById('cNGN').classList.toggle('on',cur==='NGN'); document.getElementById('cUSDT').classList.toggle('on',cur==='USDT'); document.getElementById('cUSD').classList.toggle('on',cur==='USD');}
+let user=JSON.parse(localStorage.getItem('zf_user')||'null'); let allUsers=JSON.parse(localStorage.getItem('zf_allUsers')||'{}');
+let tasks=JSON.parse(localStorage.getItem('zf_tasks')||'[]'); let pendings=JSON.parse(localStorage.getItem('zf_pendings')||'[]'); let complaints=JSON.parse(localStorage.getItem('zf_complaints')||'[]'); let withdraws=JSON.parse(localStorage.getItem('zf_withdraws')||'[]');
+let mining=false, mineInt=null;
+function save(){localStorage.setItem('zf_allUsers',JSON.stringify(allUsers));localStorage.setItem('zf_tasks',JSON.stringify(tasks));localStorage.setItem('zf_pendings',JSON.stringify(pendings));localStorage.setItem('zf_complaints',JSON.stringify(complaints));localStorage.setItem('zf_withdraws',JSON.stringify(withdraws)); if(user) localStorage.setItem('zf_user',JSON.stringify(user));}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('on')); document.getElementById('page-'+p).classList.add('on'); document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on')); let t=document.getElementById('tab-'+p); if(t) t.classList.add('on');}
+function updateBal(){if(!user) return; document.getElementById('bal').innerText=Math.floor(user.balance); document.getElementById('balNaira').innerText=Math.floor(user.balance); document.getElementById('bal3').innerText=Math.floor(user.balance); let usd=(user.balance/RATE).toFixed(2); document.getElementById('balUSD').innerText=usd; document.getElementById('balUSD2').innerText=usd; document.getElementById('hash').innerText=mining?1250:0;}
 function login(){let e=document.getElementById('email').value.trim().toLowerCase(); let p=document.getElementById('pass').value.trim(); if(!e||!p) return alert("Put email & password"); if(allUsers[device]&&allUsers[device].email!==e) return alert("This phone don get account: "+allUsers[device].email); if(allUsers[device]&&allUsers[device].pass!==p) return alert("Wrong password"); if(!allUsers[device]) allUsers[device]={email:e,pass:p,balance:0,done:[]}; user={email:e,pass:p,balance:allUsers[device].balance||0,done:allUsers[device].done||[]}; save(); showApp();}
-function showApp(){if(!user) return; document.getElementById('authBox').style.display='none'; document.getElementById('welcomeTxt').innerText="Welcome "+user.email; document.getElementById('pEmail').innerText=user.email; document.getElementById('pDevice').innerText=device; document.getElementById('balTop').innerText=user.balance; document.getElementById('bal2').innerText=user.balance; renderTasks(); renderHistory(); updateCurUI();}
-function renderTasks(){let h=""; if(tasks.length===0) h="<div class='card'>No task yet. Admin go add task soon.</div>"; tasks.forEach(t=>{let done=user&&user.done.includes(t.id); let pend=pendings.find(x=>x.email===user?.email&&x.taskId===t.id); h+=`<div class="task"><b>${t.title}</b><br>Pay: ${t.cur==='NGN'?'₦':t.cur} ${t.pay}<br>${done?'<b style="color:green">✅ DONE</b>':pend?'<b style="color:orange">⏳ Waiting Admin</b>':`<button onclick="startTask('${t.id}')">Start Task - Open Link</button><div id="timer-${t.id}" style="font-size:12px"></div><div id="proof-${t.id}" class="hidden"><input type="file" id="file-${t.id}" accept="image/*"><button onclick="submitProof('${t.id}')">Submit Proof</button></div>`}</div>`;}); document.getElementById('tasks').innerHTML=h;}
-function startTask(id){let t=tasks.find(x=>x.id===id); window.open(t.link,'_blank'); let sec=20; let el=document.getElementById('timer-'+id); el.innerHTML="Wait "+sec+" secs..."; let iv=setInterval(()=>{sec--; el.innerHTML="Wait "+sec+" secs..."; if(sec<=0){clearInterval(iv); el.innerHTML="✅ Time done! Upload proof"; document.getElementById('proof-'+id).classList.remove('hidden');}},1000);}
-function submitProof(id){let f=document.getElementById('file-'+id).files[0]; if(!f) return alert("Upload screenshot proof"); let t=tasks.find(x=>x.id===id); pendings.push({email:user.email,taskId:id,title:t.title,pay:t.pay,cur:t.cur,proof:f.name,time:new Date().toLocaleString()}); save(); alert("Proof sent! Admin go approve."); renderTasks();}
-function withdraw(){let amt,detail; if(wCur==='NGN'){amt=+document.getElementById('wAmt').value; detail=document.getElementById('wBank').value+" "+document.getElementById('wAcc').value+" "+document.getElementById('wName').value;}else{amt=+document.getElementById('wAmt2').value; detail=document.getElementById('wWallet').value+" "+document.getElementById('wNetwork').value;} if(!amt||amt<1) return alert("Put amount"); if(amt>user.balance) return alert("Balance no reach"); user.balance-=amt; allUsers[device].balance=user.balance; withdraws.push({email:user.email,amt,cur:wCur,detail,time:new Date().toLocaleString()}); save(); showApp(); alert("Withdraw request sent!");}
-function complain(){let c=document.getElementById('complaint').value.trim(); if(!c) return alert("Write complaint"); complaints.push({email:user?.email||'Guest',msg:c,time:new Date().toLocaleString()}); save(); alert("Complaint sent to Admin"); document.getElementById('complaint').value="";}
+function showApp(){if(!user) return; document.getElementById('auth').style.display='none'; document.getElementById('app').style.display='block'; document.getElementById('pEmail').innerText=user.email; document.getElementById('pDevice').innerText=device; updateBal(); renderTasks(); renderHistory();}
+function toggleMine(){if(!user) return alert("Login first"); mining=!mining; document.getElementById('circle').classList.toggle('mining',mining); document.getElementById('mineStatus').innerText=mining?"GOLD MINING...":"STOPPED"; document.getElementById('mineBtn').innerText=mining?"⏸ STOP MINING":"▶ START GOLD MINING"; document.getElementById('mineEarn').innerText=mining?"+₦0.50 / sec":"+₦0.00 / sec"; if(mining){mineInt=setInterval(()=>{user.balance+=0.5; allUsers[device].balance=user.balance; save(); updateBal();},1000);} else clearInterval(mineInt); updateBal();}
+function renderTasks(){let h=""; if(tasks.length===0) h="<p class='small'>No task yet. Admin go add.</p>"; tasks.forEach(t=>{let done=user.done.includes(t.id); let pend=pendings.find(x=>x.email===user.email&&x.taskId===t.id); h+=`<div class="task"><b>${t.title}</b><br>Pay: ₦${t.pay}<br>${done?'<b style="color:#FFD700">✅ DONE</b>':pend?'<b style="color:#FFD700">⏳ Waiting Admin</b>':`<button onclick="startTask('${t.id}')">Start Task</button><div id="timer-${t.id}" class="small"></div><div id="proof-${t.id}" style="display:none"><input type="file" id="file-${t.id}" accept="image/*"><button onclick="submitProof('${t.id}')">Submit Proof</button></div>`}</div>`}); document.getElementById('tasks').innerHTML=h;}
+function startTask(id){let t=tasks.find(x=>x.id===id); window.open(t.link,'_blank'); let sec=20; let el=document.getElementById('timer-'+id); el.innerHTML="Wait "+sec+" secs..."; let iv=setInterval(()=>{sec--; el.innerHTML="Wait "+sec+" secs..."; if(sec<=0){clearInterval(iv); el.innerHTML="✅ Time done! Upload proof"; document.getElementById('proof-'+id).style.display='block';}},1000);}
+function submitProof(id){let f=document.getElementById('file-'+id).files[0]; if(!f) return alert("Upload screenshot"); let t=tasks.find(x=>x.id===id); pendings.push({email:user.email,taskId:id,title:t.title,pay:t.pay,proof:f.name}); save(); alert("Proof sent! Admin go approve."); renderTasks();}
+function toggleW(){let c=document.getElementById('wCur').value; document.getElementById('wNaira').style.display=c==='NGN'?'block':'none'; document.getElementById('wCrypto').style.display=c==='NGN'?'none':'block';}
+function withdraw(){let cur=document.getElementById('wCur').value; let amt=+document.getElementById('wAmt').value; let detail=cur==='NGN'?document.getElementById('wBank').value+" "+document.getElementById('wAcc').value+" "+document.getElementById('wName').value:document.getElementById('wWallet').value+" "+document.getElementById('wNetwork').value; if(!amt) return alert("Put amount"); if(cur!=='NGN') amt=amt*RATE; if(amt>user.balance) return alert("Balance no reach"); user.balance-=amt; allUsers[device].balance=user.balance; withdraws.push({email:user.email,amt,cur,detail}); save(); updateBal(); alert("Withdraw request sent!"); renderHistory();}
+function complain(){let c=document.getElementById('complaint').value.trim(); if(!c) return alert("Write complaint"); complaints.push({email:user?.email||'Guest',msg:c}); save(); alert("Complaint sent"); document.getElementById('complaint').value="";}
 function renderHistory(){document.getElementById('history').innerHTML="Pendings: "+pendings.filter(x=>x.email===user?.email).length+" | Withdraws: "+withdraws.filter(x=>x.email===user?.email).length;}
 function logout(){localStorage.removeItem('zf_user'); location.reload();}
-function openAdmin(){let e=prompt("Admin Email:"); if(e&&e.trim().toLowerCase()===ADMIN){nav('admin'); renderAdmin();} else alert("Not Admin");}
-function addTask(){let title=document.getElementById('newTitle').value.trim(); let pay=+document.getElementById('newPay').value; let link=document.getElementById('newLink').value.trim(); let c=document.getElementById('newCur').value; if(!title||!pay||!link) return alert("Fill all task details"); tasks.push({id:'T'+Date.now(),title,pay,link,cur:c}); save(); alert("Task added! Users go see am now."); renderAdmin(); renderTasks(); document.getElementById('newTitle').value=""; document.getElementById('newPay').value=""; document.getElementById('newLink').value="";}
+function openAdmin(){let e=prompt("Admin Email:"); if(e&&e.trim().toLowerCase()===ADMIN){showPage('admin'); renderAdmin();} else alert("Not Admin");}
+function addTask(){let title=document.getElementById('newTitle').value.trim(); let pay=+document.getElementById('newPay').value; let link=document.getElementById('newLink').value.trim(); if(!title||!pay||!link) return alert("Fill all"); tasks.push({id:'T'+Date.now(),title,pay,link}); save(); alert("Task added!"); renderAdmin(); renderTasks(); document.getElementById('newTitle').value=""; document.getElementById('newPay').value=""; document.getElementById('newLink').value="";}
 function deleteTask(id){tasks=tasks.filter(t=>t.id!==id); save(); renderAdmin(); renderTasks();}
-function renderAdmin(){let h=""; tasks.forEach(t=>{h+=`<div class="task">${t.title} - ${t.cur} ${t.pay} <button class="red" onclick="deleteTask('${t.id}')">Delete</button></div>`}); document.getElementById('adminTasks').innerHTML=h||"No task"; let p=""; pendings.forEach((x,i)=>{p+=`<div class="task">${x.email} - ${x.title} - ${x.cur} ${x.pay}<br><button onclick="approve(${i})">Approve + Pay</button><button class="red" onclick="reject(${i})">Reject</button></div>`}); document.getElementById('adminList').innerHTML=p||"No pending"; let w=""; withdraws.forEach(x=>{w+=`<div class="task">${x.email} - ${x.cur} ${x.amt} - ${x.detail}</div>`}); document.getElementById('adminWithdraws').innerHTML=w||"None"; let c=""; complaints.forEach(x=>{c+=`<div class="task">${x.email}: ${x.msg}</div>`}); document.getElementById('adminComplaints').innerHTML=c||"None";}
-function approve(i){let p=pendings[i]; for(let d in allUsers){if(allUsers[d].email===p.email){allUsers[d].balance=(allUsers[d].balance||0)+p.pay; if(!allUsers[d].done.includes(p.taskId)) allUsers[d].done.push(p.taskId); if(user&&user.email===p.email){user.balance=allUsers[d].balance; user.done=allUsers[d].done;}}} pendings.splice(i,1); save(); alert("Approved!"); renderAdmin(); showApp();}
+function renderAdmin(){let h=""; tasks.forEach(t=>{h+=`<div class="task">${t.title} - ₦${t.pay} <button class="red" onclick="deleteTask('${t.id}')">Delete</button></div>`}); document.getElementById('adminTasks').innerHTML=h||"No task"; let p=""; pendings.forEach((x,i)=>{p+=`<div class="task">${x.email} - ${x.title} - ₦${x.pay}<br><button onclick="approve(${i})">Approve + Pay</button><button class="red" onclick="reject(${i})">Reject</button></div>`}); document.getElementById('adminList').innerHTML=p||"None"; let w=""; withdraws.forEach(x=>{w+=`<div class="task">${x.email} - ${x.cur} ₦${x.amt} - ${x.detail}</div>`}); document.getElementById('adminWithdraws').innerHTML=w||"None"; let c=""; complaints.forEach(x=>{c+=`<div class="task">${x.email}: ${x.msg}</div>`}); document.getElementById('adminComplaints').innerHTML=c||"None";}
+function approve(i){let p=pendings[i]; for(let d in allUsers){if(allUsers[d].email===p.email){allUsers[d].balance+=p.pay; if(!allUsers[d].done.includes(p.taskId)) allUsers[d].done.push(p.taskId); if(user&&user.email===p.email){user.balance=allUsers[d].balance; user.done=allUsers[d].done;}}} pendings.splice(i,1); save(); updateBal(); alert("Approved!"); renderAdmin(); renderTasks();}
 function reject(i){pendings.splice(i,1); save(); renderAdmin();}
 if(user){user.balance=allUsers[device]?.balance||0; user.done=allUsers[device]?.done||[]; showApp();}
-updateCurUI(); renderTasks();
 </script>
 </body>
-                                    </html>
+</html>
