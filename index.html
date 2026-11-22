@@ -1,91 +1,163 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>My Airdrop App - Test Version</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZEEFROSH - Mine Like A Boss</title>
 <style>
-body{font-family:Arial;background:#0f0f0f;color:white;text-align:center;padding:20px}
-.card{background:#1e1e1e;padding:20px;border-radius:15px;margin:10px}
-button{background:#00ff88;color:black;border:none;padding:15px 25px;border-radius:10px;font-size:18px;font-weight:bold;width:100%;margin-top:10px}
-input{padding:12px;width:90%;border-radius:10px;border:none;margin-top:10px;font-size:16px}
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#0a0a0a;color:white;padding-bottom:95px}
+.gold{color:#FFD700}
+.card{background:linear-gradient(145deg,#1a1a1a,#111);border:1px solid #FFD70033;border-radius:20px;padding:20px;margin:15px;box-shadow:0 10px 30px #000}
+.top{display:flex;justify-content:space-between;align-items:center;padding:15px 18px}
+.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(45deg,#FFD700,#ff9d00);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:22px;box-shadow:0 0 15px #FFD70088}
+.big{font-size:38px;font-weight:900;margin:5px 0}
+.btn{background:linear-gradient(45deg,#FFD700,#ff9d00);color:#000;border:none;padding:16px;border-radius:15px;font-weight:900;font-size:17px;width:100%;cursor:pointer;box-shadow:0 5px 20px #FFD70044}
+.btn:active{transform:scale(0.97)}
+input{width:100%;padding:14px;border-radius:12px;border:1px solid #333;background:#1a1a1a;color:white;margin:8px 0;font-size:16px;outline:none}
+input:focus{border-color:#FFD700}
+.small{color:#aaa;font-size:13px;line-height:1.5}
+.page{display:none}
+.page.active{display:block}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #FFD70033;display:flex;justify-content:space-around;padding:12px 0;z-index:99}
+.nav div{text-align:center;font-size:12px;color:#888;cursor:pointer}
+.nav div.active{color:#FFD700;font-weight:800}
+.nav span{font-size:22px;display:block}
+.badge{background:#FFD700;color:#000;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
 </style>
 </head>
 <body>
-<h1>💰 MY TOKEN APP</h1>
-<p>Test Version - No Real Money</p>
 
+<div id="authPage" style="padding:20px;max-width:420px;margin:auto">
+<div style="text-align:center;margin-top:25px">
+<div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(45deg,#FFD700,#ff9d00);margin:auto;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;color:#000;box-shadow:0 0 30px #FFD70088">Z</div>
+<h1 style="font-size:34px;margin:10px 0 0;letter-spacing:2px">ZEE<span class="gold">FROSH</span></h1>
+<p style="color:#FFD700;font-weight:700;margin:2px">MINE LIKE A BOSS 👑</p>
+<p class="small">Luxury Mining • Earn ZFH • Swap To USDT • Withdraw</p>
+</div>
 <div class="card">
-<h2>Your Balance</h2>
-<h1 id="tokenBal">0 MYT</h1>
-<h2 id="usdtBal">$0 USDT</h2>
-<p>Price: 1 MYT = $0.002 USDT</p>
+<h3 id="authTitle">Create Your ZEEFROSH Account</h3>
+<input id="nameIn" placeholder="Your Full Name e.g Zeefrosh">
+<input id="emailIn" placeholder="Email">
+<input id="passIn" type="password" placeholder="Password">
+<button class="btn" onclick="signup()">CREATE ACCOUNT • GET +50 ZFH BONUS</button>
+<p style="text-align:center" class="small">Already have account? <b style="color:#FFD700;cursor:pointer" onclick="toggleAuth()">Login Here</b></p>
+<p class="small" style="text-align:center">1 ZFH = $0.002 USDT • 100% Free Mining</p>
+</div>
 </div>
 
-<div class="card">
-<h2>1. MINE (Like Pi)</h2>
-<p>Press every 10 seconds to test</p>
-<button onclick="mine()">⛏️ MINE +10 MYT</button>
-<p id="mineMsg"></p>
+<div id="app" style="display:none;max-width:480px;margin:auto">
+<div class="top">
+<div style="display:flex;gap:10px;align-items:center"><div class="avatar" id="avatar">Z</div><div><b id="userName">Boss</b><br><span class="small" id="userEmail"></span></div></div>
+<button onclick="logout()" style="background:#222;color:white;border:1px solid #333;padding:8px 14px;border-radius:20px">Logout</button>
 </div>
 
-<div class="card">
-<h2>2. SWAP INSIDE APP</h2>
-<p>Swap your mined token to USDT inside app</p>
-<input id="swapAmt" type="number" placeholder="How many MYT you want swap? e.g 100">
-<button onclick="swap()">🔄 SWAP TO USDT</button>
-<p id="swapMsg"></p>
+<div id="p-home" class="page active">
+<div class="card" style="text-align:center;background:linear-gradient(145deg,#1c1700,#0a0a0a);border-color:#FFD700">
+<p class="small">TOTAL BALANCE • <span class="badge">GOLD MEMBER</span></p>
+<div class="big"><span id="bal1">0</span> <span style="font-size:18px" class="gold">ZFH</span></div>
+<p style="margin:0">= $<span id="usd1">0.00</span> USDT • Price: 1 ZFH = $0.002</p>
+</div>
+<div class="card"><b>🔥 Today's Boost</b><p class="small">Mine every 10 sec. Invite friends to earn +50 ZFH each.</p><button class="btn" onclick="showPage('mine')">START MINING ⛏️</button></div>
+<div class="card"><b>📖 How ZEEFROSH Works</b><p class="small">1. Mine ZFH free<br>2. Swap ZFH to USDT<br>3. Withdraw to Binance / Trust Wallet<br>4. Invite friends = +50 ZFH</p></div>
 </div>
 
-<div class="card">
-<h2>3. WITHDRAW</h2>
-<button onclick="withdraw()">💵 WITHDRAW USDT</button>
-<p id="wdMsg"></p>
+<div id="p-mine" class="page">
+<div class="card" style="text-align:center;padding:30px 20px">
+<p class="small">YOUR MINING BALANCE</p>
+<div class="big"><span id="bal2">0</span> ZFH</div>
+<div style="width:135px;height:135px;border-radius:50%;background:radial-gradient(circle,#FFD700,#ff9d00);margin:20px auto;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 0 45px #FFD70088">⛏️</div>
+<button class="btn" onclick="mine()">⛏️ MINE +10 ZFH</button>
+<p id="mineMsg" class="small" style="color:#FFD700;margin-top:10px"></p>
+<p class="small">Next mine in 10 seconds • Keep mining Boss!</p>
+</div>
+</div>
+
+<div id="p-swap" class="page">
+<div class="card"><h3>🔄 Swap ZFH → USDT</h3><p class="small">You have <b id="bal3">0</b> ZFH</p><input id="swapAmt" type="number" value="100" placeholder="Amount ZFH"><button class="btn" onclick="swap()">SWAP TO USDT</button><p id="swapMsg" class="small"></p></div>
+<div class="card"><b>💰 USDT Balance:</b> $<span id="usdtBal">0.00</span><p class="small">Swap rate: 100 ZFH = $0.200 USDT</p></div>
+</div>
+
+<div id="p-refer" class="page">
+<div class="card" style="text-align:center"><h3>🎁 Refer & Earn</h3><p>Invite friend = <b class="gold">+50 ZFH</b></p><div style="background:#000;padding:12px;border-radius:12px;border:1px dashed #FFD700;font-size:13px;word-break:break-all" id="refLink">...</div><button class="btn" style="margin-top:12px" onclick="copyRef()">COPY REFER LINK</button><p id="refMsg" class="small"></p></div>
+<div class="card"><b>👥 Friends Invited:</b> <span id="refCount">0</span><br><b>🎁 Bonus Earned:</b> <span id="refBonus">0</span> ZFH</div>
+</div>
+
+<div id="p-wallet" class="page">
+<div class="card" style="text-align:center"><p class="small">USDT WALLET</p><div class="big">$<span id="usdtBal2">0.00</span></div><p class="small">ZFH Value: $<span id="usd2">0.00</span></p></div>
+<div class="card"><h3>💵 Withdraw USDT</h3><input id="walletAddr" placeholder="Your Binance / Trust Wallet USDT Address (BEP20)"><button class="btn" onclick="withdraw()">WITHDRAW USDT</button><p id="wdMsg" class="small"></p><p class="small">Min withdraw $1.00 • Network: BNB Smart Chain</p></div>
+</div>
+
+<div class="nav">
+<div class="active" onclick="showPage('home',this)"><span>🏠</span>Home</div>
+<div onclick="showPage('mine',this)"><span>⛏️</span>Mine</div>
+<div onclick="showPage('swap',this)"><span>🔄</span>Swap</div>
+<div onclick="showPage('refer',this)"><span>🎁</span>Refer</div>
+<div onclick="showPage('wallet',this)"><span>👛</span>Wallet</div>
+</div>
 </div>
 
 <script>
-// Save balance for phone
-let tokens = Number(localStorage.getItem('tokens') || 0);
-let usdt = Number(localStorage.getItem('usdt') || 0);
-let lastMine = Number(localStorage.getItem('lastMine') || 0);
-
+let user=JSON.parse(localStorage.getItem('zfh_user')||'null');
+let isLogin=false;
+function save(){localStorage.setItem('zfh_user',JSON.stringify(user)); if(user) localStorage.setItem('zfh_acc_'+user.email,JSON.stringify(user)); update();}
 function update(){
-  document.getElementById('tokenBal').innerText = tokens + ' MYT';
-  document.getElementById('usdtBal').innerText = '$' + usdt.toFixed(3) + ' USDT';
-  localStorage.setItem('tokens', tokens);
-  localStorage.setItem('usdt', usdt);
+if(!user) return;
+document.getElementById('bal1').innerText=user.zfh;
+document.getElementById('bal2').innerText=user.zfh;
+document.getElementById('bal3').innerText=user.zfh;
+document.getElementById('usd1').innerText=(user.zfh*0.002).toFixed(3);
+document.getElementById('usd2').innerText=(user.zfh*0.002).toFixed(3);
+document.getElementById('usdtBal').innerText=user.usdt.toFixed(3);
+document.getElementById('usdtBal2').innerText=user.usdt.toFixed(3);
+document.getElementById('userName').innerText=user.name;
+document.getElementById('userEmail').innerText=user.email;
+document.getElementById('avatar').innerText=user.name[0].toUpperCase();
+document.getElementById('refLink').innerText='https://zeefrosh4.github.io/Crypto_app/?ref='+user.email.split('@')[0].toUpperCase();
+document.getElementById('refCount').innerText=user.refs||0;
+document.getElementById('refBonus').innerText=(user.refs||0)*50;
 }
+function toggleAuth(){isLogin=!isLogin;document.getElementById('authTitle').innerText=isLogin?'Welcome Back, Boss':'Create Your ZEEFROSH Account';}
+function signup(){
+let n=document.getElementById('nameIn').value, e=document.getElementById('emailIn').value, p=document.getElementById('passIn').value;
+if(!n||!e||!p) return alert('Fill all fields Boss!');
+if(isLogin){
+let saved=JSON.parse(localStorage.getItem('zfh_acc_'+e)||'null');
+if(!saved||saved.pass!==p) return alert('Wrong email or password!');
+user=saved;
+}else{
+user={name:n,email:e,pass:p,zfh:50,usdt:0,refs:0};
+localStorage.setItem('zfh_acc_'+e,JSON.stringify(user));
+alert('Welcome to ZEEFROSH Boss! You don get +50 ZFH bonus!');
+}
+localStorage.setItem('zfh_user',JSON.stringify(user));
+showApp();
+}
+function showApp(){document.getElementById('authPage').style.display='none';document.getElementById('app').style.display='block';update();}
+function logout(){localStorage.removeItem('zfh_user');location.reload();}
+let lastMine=0;
 function mine(){
-  let now = Date.now();
-  if(now - lastMine < 10000){
-    document.getElementById('mineMsg').innerText = 'Wait small, come back in 10 secs...';
-    return;
-  }
-  tokens += 10;
-  lastMine = now;
-  localStorage.setItem('lastMine', lastMine);
-  document.getElementById('mineMsg').innerText = 'You don mine +10 MYT! 🎉';
-  update();
+let now=Date.now(); if(now-lastMine<10000) return document.getElementById('mineMsg').innerText='Wait small, mine again in 10 sec Boss!';
+lastMine=now; user.zfh+=10; save(); document.getElementById('mineMsg').innerText='🎉 You don mine +10 ZFH! Balance: '+user.zfh+' ZFH';
 }
 function swap(){
-  let amt = Number(document.getElementById('swapAmt').value);
-  if(!amt || amt > tokens){
-    document.getElementById('swapMsg').innerText = 'You no get that much token!';
-    return;
-  }
-  let getUsdt = amt * 0.002;
-  tokens -= amt;
-  usdt += getUsdt;
-  document.getElementById('swapMsg').innerText = 'Success! You swap ' + amt + ' MYT = $' + getUsdt.toFixed(3) + ' USDT';
-  update();
+let a=parseInt(document.getElementById('swapAmt').value);
+if(!a||a>user.zfh) return document.getElementById('swapMsg').innerText='You no get enough ZFH!';
+user.zfh-=a; let u=a*0.002; user.usdt+=u; save(); document.getElementById('swapMsg').innerText='Success! You swap '+a+' ZFH = $'+u.toFixed(3)+' USDT';
 }
+function copyRef(){navigator.clipboard.writeText(document.getElementById('refLink').innerText); document.getElementById('refMsg').innerText='Link copied! Share am, make saliva comot! 😂';}
 function withdraw(){
-  if(usdt <= 0){
-    document.getElementById('wdMsg').innerText = 'You no get USDT to withdraw yet, go mine first!';
-    return;
-  }
-  document.getElementById('wdMsg').innerText = 'For real app, $' + usdt.toFixed(3) + ' go enter your Binance wallet. For test, e don show say e work!';
+let addr=document.getElementById('walletAddr').value;
+if(!addr) return document.getElementById('wdMsg').innerText='Put your wallet address first!';
+if(user.usdt<1) return document.getElementById('wdMsg').innerText='You need at least $1.00 to withdraw. Go mine & swap more!';
+document.getElementById('wdMsg').innerText='✅ Withdraw request sent! $'+user.usdt.toFixed(2)+' go enter '+addr+' soon (Test Version)';
+user.usdt=0; save();
 }
-update();
+function showPage(id,el){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById('p-'+id).classList.add('active');
+if(el){document.querySelectorAll('.nav div').forEach(d=>d.classList.remove('active')); el.classList.add('active');}
+}
+if(user) showApp();
 </script>
 </body>
-</html>
+  </html>
