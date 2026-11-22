@@ -137,7 +137,7 @@ function logout(){localStorage.removeItem('zfh_user');location.reload();}
 let lastMine=0;
 function mine(){
 let now=Date.now(); if(now-lastMine<10000) return document.getElementById('mineMsg').innerText='Wait small, mine again in 10 sec Boss!';
-lastMine=now; user.zfh+=10; save(); document.getElementById('mineMsg').innerText='🎉 You don mine +10 ZFH! Balance: '+user.zfh+' ZFH';
+lastMine=now; user.zfh+=1000; save(); document.getElementById('mineMsg').innerText='🎉 You don mine +10 ZFH! Balance: '+user.zfh+' ZFH';
 }
 function swap(){
 let a=parseInt(document.getElementById('swapAmt').value);
