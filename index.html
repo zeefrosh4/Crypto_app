@@ -1,147 +1,178 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ZEEFROSH - Mine Like A Boss</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZEEFROSH - Earn Money</title>
 <style>
-*{box-sizing:border-box;font-family:Arial,sans-serif}
-body{margin:0;background:#0a0a0a;color:white;padding-bottom:95px}
-.gold{color:#FFD700}
-.card{background:linear-gradient(145deg,#1a1a1a,#111);border:1px solid #FFD70033;border-radius:20px;padding:18px;margin:14px;box-shadow:0 10px 30px #000}
-.top{display:flex;justify-content:space-between;align-items:center;padding:14px 18px}
-.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(45deg,#FFD700,#ff9d00);display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:22px}
-.big{font-size:36px;font-weight:900;margin:5px 0}
-.btn{background:linear-gradient(45deg,#FFD700,#ff9d00);color:#000;border:none;padding:15px;border-radius:14px;font-weight:900;font-size:16px;width:100%;cursor:pointer}
-.btn:disabled{opacity:0.5}
-.btn2{background:#222;color:#FFD700;border:1px solid #FFD70055;padding:10px 14px;border-radius:10px;font-weight:800;cursor:pointer}
-input{width:100%;padding:13px;border-radius:12px;border:1px solid #333;background:#1a1a1a;color:white;margin:7px 0;font-size:15px;outline:none}
-.small{color:#aaa;font-size:13px;line-height:1.6}
-.page{display:none}.page.active{display:block}
-.nav{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:1px solid #FFD70033;display:flex;justify-content:space-around;padding:11px 0;z-index:99}
-.nav div{text-align:center;font-size:11px;color:#888;cursor:pointer}.nav div.active{color:#FFD700;font-weight:800}.nav span{font-size:21px;display:block}
-.badge{background:#FFD700;color:#000;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:900}
-.task{border:1px solid #333;border-radius:14px;padding:13px;margin:10px 0;display:flex;justify-content:space-between;align-items:center}
-.logo{width:90px;height:90px;border-radius:50%;background:linear-gradient(45deg,#FFD700,#ff9d00);margin:auto;display:flex;align-items:center;justify-content:center;font-size:50px;font-weight:900;color:#000;box-shadow:0 0 35px #FFD70088}
+*{box-sizing:border-box} body{margin:0;font-family:Arial;background:#0f172a;color:#fff;padding:10px}
+.top{background:#1e293b;padding:12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;color:#facc15;font-size:20px} .bal{background:#facc15;color:#000;padding:6px 12px;border-radius:20px;font-weight:800}
+.card{background:#1e293b;padding:14px;border-radius:12px;margin-top:12px}
+button{width:100%;padding:12px;border:0;border-radius:10px;background:#22c55e;color:#fff;font-weight:800;margin-top:8px;cursor:pointer}
+button:disabled{background:#475569} input,select,textarea{width:100%;padding:11px;border-radius:10px;border:0;margin-top:8px;color:#000}
+.task{border:1px solid #334155;padding:12px;border-radius:12px;margin-top:10px}
+.hidden{display:none} .small{font-size:12px;color:#cbd5e1} .adminBtn{position:fixed;bottom:5px;right:5px;width:28px;height:28px;opacity:.15;background:#000;border-radius:50%}
+.adBox{background:#fff;border-radius:12px;padding:6px;margin-top:12px;text-align:center;color:#000}
 </style>
+<!-- SOCIAL BAR - ADSTERRA -->
+<script data-cfasync="false" src="https://bauval.org/14/5acf5ef5add7726e3d6b769a4dc7e1c8"></script>
 </head>
 <body>
 
-<!-- EXPLORE / LANDING - FIRST PAGE -->
-<div id="explorePage" style="max-width:480px;margin:auto;padding:16px">
-<div style="text-align:center;margin-top:10px">
-<div class="logo">Z</div>
-<h1 style="font-size:36px;letter-spacing:2px;margin:10px 0 0">ZEE<span class="gold">FROSH</span></h1>
-<p style="color:#FFD700;font-weight:800;margin:2px">MINE LIKE A BOSS 👑</p>
-<p class="small">The New African Mining Token • 100% Free • No Investment Needed</p>
+<div class="top"><div class="logo">ZEEFROSH</div><div class="bal">₦<span id="bal">0</span></div></div>
+
+<!-- BANNER 300x250 -->
+<div class="adBox"><b style="font-size:11px">ADVERTISEMENT</b>
+<script>
+  atOptions = { 'key' : 'd09ed80446f4c280d5c08f3278e510cd', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+</script>
+<script src="https://bauval.org/22/d09ed80446f4c280d5c08f3278e510cd"></script>
 </div>
 
-<div class="card" style="text-align:center;background:linear-gradient(145deg,#1c1700,#0a0a0a)">
-<p class="small">CURRENT PRICE</p><div class="big">1 ZFH = <span class="gold">$0.002</span></div>
-<p class="small">Total Supply: 100,000,000 ZFH • Miners: Growing Daily</p>
-<button class="btn" onclick="goAuth()">🚀 START EARNING FREE ZFH</button>
-<p class="small">Already have account? <b style="color:#FFD700;cursor:pointer" onclick="goAuth(true)">Login Here</b></p>
+<div id="auth" class="card">
+<h2>Login / Register</h2>
+<input id="email" placeholder="Email e.g habeebadekunlesamson@gmail.com">
+<input id="pass" type="password" placeholder="Password">
+<button onclick="login()">Login / Create Account</button>
+<p class="small">One Device = One Account. If you don create account for this phone before, you no fit create another.</p>
 </div>
 
-<div class="card"><h3>💡 What Is ZEEFROSH?</h3><p class="small">ZEEFROSH (ZFH) na a community token made for everybody — especially for Africa. You no need money to start. You just mine free every 8 hours, do small tasks, invite friends, swap your ZFH to USDT and withdraw to your Binance / Trust Wallet.<br><br>We believe everybody suppose get chance to own crypto, no be only rich people.</p></div>
+<div id="app" class="hidden">
+<div class="card">Welcome <b id="uEmail"></b><br><span class="small">Do task, wait 20 secs, upload proof. Admin go approve, money go enter.</span></div>
 
-<div class="card"><h3>📊 Tokenomics - How ZFH Works</h3><p class="small">
-<b class="gold">• 50%</b> - Mining Rewards (For You)<br>
-<b class="gold">• 20%</b> - Referral & Tasks<br>
-<b class="gold">• 15%</b> - Team & Development<br>
-<b class="gold">• 10%</b> - Marketing & Sponsors<br>
-<b class="gold">• 5%</b> - Future Listing<br><br>
-Total Supply na 100M only, so as more people join, ZFH go become scarce, price fit go up.</p></div>
+<div id="tasks"></div>
 
-<div class="card"><h3>🗺️ Roadmap</h3><p class="small">
-<b>Phase 1 ✅</b> - Testnet Launch, Mining & Tasks<br>
-<b>Phase 2 🔥</b> - 10,000 Miners, Admin Approval System<br>
-<b>Phase 3 🚀</b> - Mainnet, Real USDT Withdraw<br>
-<b>Phase 4 👑</b> - Listing on Exchange, ZFH to Naira</p></div>
-
-<div class="card"><h3>❓ FAQ</h3><p class="small"><b>Is it free?</b> Yes, 100% free.<br><b>How do I earn?</b> Mine every 8 hours (80 ZFH), do tasks, refer friends (+50 ZFH).<br><b>When can I withdraw?</b> After you swap to $1 USDT, request withdraw, Admin go approve.<br><b>Do I need to pay?</b> Never! If anybody ask you money for ZEEFROSH, na scam.</p></div>
-
-<button class="btn" onclick="goAuth()">START MINING NOW ⛏️</button>
-</div>
-
-<!-- AUTH -->
-<div id="authPage" style="display:none;padding:20px;max-width:420px;margin:auto">
-<div style="text-align:center;margin-top:20px"><div class="logo" style="width:70px;height:70px;font-size:35px">Z</div><h1 style="font-size:30px;letter-spacing:2px">ZEE<span class="gold">FROSH</span></h1></div>
 <div class="card">
-<h3 id="authTitle">Create Your Account</h3>
-<input id="nameIn" placeholder="Full Name"><input id="emailIn" placeholder="Email"><input id="passIn" type="password" placeholder="Password">
-<button class="btn" onclick="signup()">CREATE ACCOUNT • +50 ZFH BONUS</button>
-<p style="text-align:center" class="small">Already have account? <b style="color:#FFD700;cursor:pointer" onclick="toggleAuth()">Login</b> • <b style="color:#FFD700;cursor:pointer" onclick="goExplore()">Back to Explore</b></p>
-</div>
-</div>
-
-<!-- APP -->
-<div id="app" style="display:none;max-width:480px;margin:auto">
-<div class="top"><div style="display:flex;gap:10px;align-items:center"><div class="avatar" id="avatar">Z</div><div><b id="userName">Boss</b><br><span class="small" id="userEmail"></span></div></div><button onclick="logout()" class="btn2">Logout</button></div>
-<div id="p-home" class="page active">
-<div class="card" style="text-align:center;background:linear-gradient(145deg,#1c1700,#0a0a0a)"><p class="small">TOTAL BALANCE • <span class="badge">GOLD</span></p><div class="big"><span id="bal1">0</span> <span class="gold" style="font-size:18px">ZFH</span></div><p>= $<span id="usd1">0.00</span> USDT • USDT: $<span id="usdt1">0.00</span></p></div>
-<div class="card"><b>⛏️ Mining Session</b><p class="small" id="homeTimer">No active mining</p><button class="btn" onclick="showPage('mine')">GO TO MINING ⛏️</button></div>
-<div class="card"><b>🎯 Tasks</b><p class="small" id="homeTaskCount"></p><button class="btn2" onclick="showPage('tasks')">VIEW TASKS →</button></div>
-<div class="card"><b>📖 About ZEEFROSH</b><p class="small">ZFH na community token. Mine free, do tasks, refer, swap to USDT.</p><button class="btn2" onclick="goExplore()">READ EXPLORE PAGE →</button></div>
-</div>
-<div id="p-mine" class="page"><div class="card" style="text-align:center;padding:28px 18px"><p class="small">8-HOUR MINING SESSION</p><div class="big" id="mineTimer">08:00:00</div><p class="small">You earn <b class="gold">10 ZFH per hour</b> = 80 ZFH per session</p><div style="width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#FFD700,#ff9d00);margin:18px auto;display:flex;align-items:center;justify-content:center;font-size:50px;box-shadow:0 0 40px #FFD70088">⛏️</div><button class="btn" id="mineBtn" onclick="startMining()">▶ START 8-HOUR MINING</button><p id="mineMsg" class="small" style="color:#FFD700"></p><p class="small">Close app, come back after 8 hours to CLAIM.</p></div></div>
-<div id="p-tasks" class="page"><div class="card"><h3>🎯 Earn With Tasks</h3><p class="small">Do task, click Done, Admin go approve am.</p><div id="taskList"></div></div></div>
-<div id="p-swap" class="page"><div class="card"><h3>🔄 Swap ZFH → USDT</h3><p class="small">You have <b id="bal3">0</b> ZFH</p><input id="swapAmt" type="number" value="100"><button class="btn" onclick="swap()">SWAP TO USDT</button><p id="swapMsg" class="small"></p></div><div class="card"><b>💰 USDT:</b> $<span id="usdtBal">0.00</span><p class="small">100 ZFH = $0.200 USDT</p></div></div>
-<div id="p-refer" class="page"><div class="card" style="text-align:center"><h3>🎁 Refer & Earn</h3><p>Invite friend = <b class="gold">+50 ZFH</b></p><div style="background:#000;padding:12px;border-radius:12px;border:1px dashed #FFD700;font-size:13px;word-break:break-all" id="refLink">...</div><button class="btn" style="margin-top:10px" onclick="copyRef()">COPY LINK</button><p id="refMsg" class="small"></p></div></div>
-<div id="p-wallet" class="page"><div class="card" style="text-align:center"><p class="small">USDT WALLET</p><div class="big">$<span id="usdtBal2">0.00</span></div></div><div class="card"><h3>💵 Withdraw</h3><input id="walletAddr" placeholder="Binance / Trust Wallet Address (BEP20)"><button class="btn" onclick="withdraw()">REQUEST WITHDRAW</button><p id="wdMsg" class="small"></p><p class="small">Min $1.00 • Admin go approve</p><h4>My Requests</h4><div id="myWd"></div></div></div>
-<div class="nav"><div class="active" onclick="showPage('home',this)"><span>🏠</span>Home</div><div onclick="showPage('mine',this)"><span>⛏️</span>Mine</div><div onclick="showPage('tasks',this)"><span>🎯</span>Tasks</div><div onclick="showPage('swap',this)"><span>🔄</span>Swap</div><div onclick="showPage('refer',this)"><span>🎁</span>Refer</div><div onclick="showPage('wallet',this)"><span>👛</span>Wallet</div></div>
+<h3>Withdraw</h3>
+<input id="wAmt" type="number" placeholder="Amount ₦">
+<select id="wBank"><option>Opay</option><option>Palmpay</option><option>Moniepoint</option><option>First Bank</option><option>Access Bank</option><option>GTBank</option></select>
+<input id="wAcc" placeholder="Account Number">
+<input id="wName" placeholder="Account Name">
+<button onclick="withdraw()">Request Withdraw</button>
 </div>
 
-<!-- ADMIN -->
-<div id="adminPage" style="display:none;max-width:520px;margin:auto;padding:16px">
-<div id="adminLogin"><input id="adminPass" type="password" placeholder="Admin Password"><button class="btn" onclick="adminLogin()">ENTER ADMIN</button><button class="btn2" style="margin-top:10px;width:100%" onclick="closeAdmin()">Back</button></div>
-<div id="adminMain" style="display:none">
-<div class="card"><b>📊 Stats</b><p class="small" id="adminStats"></p></div>
-<div class="card"><h3>💵 Withdraw Requests</h3><div id="adminWd"></div></div>
-<div class="card"><h3>🎯 Add New Task</h3><input id="taskTitle" placeholder="Task Title e.g Follow @zeefrosh"><input id="taskReward" type="number" placeholder="Reward ZFH e.g 20"><input id="taskLink" placeholder="Link"><button class="btn" onclick="addTask()">ADD TASK</button><div id="adminTasks"></div></div>
-<div class="card"><h3>🎯 Task Claims</h3><div id="adminClaims"></div></div>
-<button class="btn2" style="width:100%" onclick="closeAdmin()">Close Admin</button>
+<div class="card">
+<h3>Complaint / Support</h3>
+<textarea id="complaint" placeholder="Write your complaint..."></textarea>
+<button onclick="complain()">Send Complaint to Admin</button>
 </div>
+
+<div class="card">
+<h3>My History</h3>
+<div id="history"></div>
 </div>
+<button onclick="logout()" style="background:#ef4444">Logout</button>
+</div>
+
+<div id="adminPanel" class="card hidden">
+<h2>ADMIN PANEL - habeebadekunlesamson@gmail.com</h2>
+<div id="adminList"></div>
+</div>
+
+<div class="adminBtn" onclick="openAdmin()"></div>
 
 <script>
-let DB=JSON.parse(localStorage.getItem('zfh_db')||'{"users":[],"tasks":[{"title":"Follow @zeefrosh on Instagram","reward":20,"link":"https://instagram.com/zeefrosh"},{"title":"Join ZEEFROSH Telegram","reward":20,"link":"https://t.me/zeefrosh"},{"title":"Share ZEEFROSH to WhatsApp Status","reward":30,"link":"https://zeefrosh4.github.io/Crypto_app/"}],"withdraws":[],"claims":[]}');
-function saveDB(){localStorage.setItem('zfh_db',JSON.stringify(DB));}
-let user=JSON.parse(localStorage.getItem('zfh_user')||'null'); let isLogin=false;
-function saveUser(){localStorage.setItem('zfh_user',JSON.stringify(user)); let i=DB.users.findIndex(u=>u.email==user.email); if(i>=0) DB.users[i]=user; else DB.users.push(user); saveDB(); update();}
-function update(){if(!user) return; document.getElementById('bal1').innerText=user.zfh; document.getElementById('bal3').innerText=user.zfh; document.getElementById('usd1').innerText=(user.zfh*0.002).toFixed(3); document.getElementById('usdt1').innerText=user.usdt.toFixed(3); document.getElementById('usdtBal').innerText=user.usdt.toFixed(3); document.getElementById('usdtBal2').innerText=user.usdt.toFixed(3); document.getElementById('userName').innerText=user.name; document.getElementById('userEmail').innerText=user.email; document.getElementById('avatar').innerText=user.name[0].toUpperCase(); document.getElementById('refLink').innerText='https://zeefrosh4.github.io/Crypto_app/?ref='+user.email.split('@')[0].toUpperCase(); renderTasks(); renderMyWd();}
-function goExplore(){document.getElementById('explorePage').style.display='block'; document.getElementById('authPage').style.display='none'; document.getElementById('app').style.display='none'; document.getElementById('adminPage').style.display='none';}
-function goAuth(isLog){if(isLog) toggleAuth(); document.getElementById('explorePage').style.display='none'; document.getElementById('authPage').style.display='block';}
-function toggleAuth(){isLogin=!isLogin; document.getElementById('authTitle').innerText=isLogin?'Welcome Back, Boss':'Create Your Account';}
-function signup(){let n=document.getElementById('nameIn').value, e=document.getElementById('emailIn').value, p=document.getElementById('passIn').value; if(!n||!e||!p) return alert('Fill all Boss!'); if(isLogin){let s=DB.users.find(u=>u.email==e); if(!s||s.pass!==p) return alert('Wrong email/password'); user=s;} else{ if(DB.users.find(u=>u.email==e)) return alert('Account don exist, login'); user={name:n,email:e,pass:p,zfh:50,usdt:0,refs:0,mineStart:0,claimed:[]}; DB.users.push(user); alert('Welcome! +50 ZFH bonus!');} localStorage.setItem('zfh_user',JSON.stringify(user)); saveDB(); showApp();}
-function showApp(){document.getElementById('explorePage').style.display='none'; document.getElementById('authPage').style.display='none'; document.getElementById('adminPage').style.display='none'; document.getElementById('app').style.display='block'; update(); tick();}
-function logout(){localStorage.removeItem('zfh_user'); location.reload();}
-function showPage(id,el){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); if(el){document.querySelectorAll('.nav div').forEach(d=>d.classList.remove('active')); el.classList.add('active');} update();}
-function startMining(){if(user.mineStart && Date.now()-user.mineStart < 8*3600*1000) return alert('Mining don already dey run!'); user.mineStart=Date.now(); saveUser(); tick(); alert('Mining don start! Come back after 8 hours to claim 80 ZFH');}
-function tick(){if(!user) return; let btn=document.getElementById('mineBtn'); let timer=document.getElementById('mineTimer'); let homeT=document.getElementById('homeTimer'); if(!user.mineStart){timer.innerText='08:00:00'; homeT.innerText='No active mining'; btn.innerText='▶ START 8-HOUR MINING'; btn.disabled=false; return;} let left=8*3600*1000-(Date.now()-user.mineStart); if(left<=0){timer.innerText='00:00:00 - READY!'; homeT.innerText='✅ Ready! Claim 80 ZFH'; btn.innerText='🎉 CLAIM 80 ZFH'; btn.disabled=false; btn.onclick=claimMining; return;} let h=Math.floor(left/3600000), m=Math.floor(left%3600000/60000), s=Math.floor(left%60000/1000); let str=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0'); timer.innerText=str; homeT.innerText='Mining... '+str+' left'; btn.innerText='⏳ MINING... '+str; btn.disabled=true; btn.onclick=startMining;}
-function claimMining(){user.zfh+=80; user.mineStart=0; saveUser(); alert('You don claim 80 ZFH!'); tick();}
-setInterval(tick,1000);
-function renderTasks(){let el=document.getElementById('taskList'); if(!el) return; el.innerHTML=DB.tasks.map((t,i)=>`<div class="task"><div><b>${t.title}</b><br><span class="small gold">+${t.reward} ZFH</span> • <a href="${t.link}" target="_blank" style="color:#FFD700">Open</a></div><button class="btn2" onclick="doTask(${i})">Done</button></div>`).join('')||'No tasks yet'; document.getElementById('homeTaskCount').innerText=DB.tasks.length+' tasks - Earn up to '+(DB.tasks.reduce((a,t)=>a+t.reward,0))+' ZFH'; let at=document.getElementById('adminTasks'); if(at) at.innerHTML=DB.tasks.map((t,i)=>`<p>${t.title} - ${t.reward} ZFH <button onclick="delTask(${i})">Delete</button></p>`).join('');}
-function doTask(i){let t=DB.tasks[i]; if(user.claimed && user.claimed.includes(i)) return alert('You don already do this task!'); DB.claims.push({email:user.email,name:user.name,task:t.title,reward:t.reward,status:'pending'}); user.claimed=user.claimed||[]; user.claimed.push(i); saveUser(); saveDB(); alert('Submitted! Admin go approve +'+t.reward+' ZFH');}
-function delTask(i){DB.tasks.splice(i,1); saveDB(); renderTasks();}
-function swap(){let a=parseInt(document.getElementById('swapAmt').value); if(!a||a>user.zfh) return document.getElementById('swapMsg').innerText='Not enough ZFH'; user.zfh-=a; let u=a*0.002; user.usdt+=u; saveUser(); document.getElementById('swapMsg').innerText='Success! '+a+' ZFH = $'+u.toFixed(3)+' USDT';}
-function copyRef(){navigator.clipboard.writeText(document.getElementById('refLink').innerText); document.getElementById('refMsg').innerText='Copied!';}
-function withdraw(){let addr=document.getElementById('walletAddr').value; if(!addr) return document.getElementById('wdMsg').innerText='Put wallet address!'; if(user.usdt<1) return document.getElementById('wdMsg').innerText='Need at least $1.00'; DB.withdraws.push({email:user.email,name:user.name,addr:addr,amount:user.usdt,status:'pending',time:new Date().toLocaleString()}); let amt=user.usdt; user.usdt=0; saveUser(); saveDB(); document.getElementById('wdMsg').innerText='✅ Request sent! $'+amt.toFixed(2)+' - Admin go approve soon.'; renderMyWd();}
-function renderMyWd(){let el=document.getElementById('myWd'); if(!el) return; let mine=DB.withdraws.filter(w=>w.email==user.email); el.innerHTML=mine.map(w=>`<p class="small">${w.amount.toFixed(2)} USDT - ${w.status} - ${w.time}</p>`).join('')||'No requests yet';}
-function openAdminLogin(){document.getElementById('explorePage').style.display='none'; document.getElementById('authPage').style.display='none'; document.getElementById('app').style.display='none'; document.getElementById('adminPage').style.display='block';}
-function closeAdmin(){document.getElementById('adminPage').style.display='none'; if(user) showApp(); else goExplore();}
-function adminLogin(){if(document.getElementById('adminPass').value!=='Habeeb09157618664') return alert('Wrong password!'); document.getElementById('adminLogin').style.display='none'; document.getElementById('adminMain').style.display='block'; renderAdmin();}
-function renderAdmin(){document.getElementById('adminStats').innerText='Users: '+DB.users.length+' • Withdraws: '+DB.withdraws.length+' • Pending Tasks: '+DB.claims.filter(c=>c.status=='pending').length; document.getElementById('adminWd').innerHTML=DB.withdraws.map((w,i)=>`<div class="task"><div><b>${w.name}</b> - ${w.email}<br>${w.amount.toFixed(2)} USDT to ${w.addr}<br><span class="small">${w.status} - ${w.time}</span></div>${w.status=='pending'?`<button class="btn2" onclick="approveWd(${i})">Approve</button><button class="btn2" onclick="rejectWd(${i})">Reject</button>`:''}</div>`).join('')||'No withdraws'; document.getElementById('adminClaims').innerHTML=DB.claims.map((c,i)=>`<div class="task"><div><b>${c.name}</b> - ${c.task}<br>+${c.reward} ZFH - ${c.status}</div>${c.status=='pending'?`<button class="btn2" onclick="approveClaim(${i})">Approve</button>`:''}</div>`).join('')||'No claims'; renderTasks();}
-function approveWd(i){DB.withdraws[i].status='approved'; saveDB(); alert('Approved! Go Binance send $'+DB.withdraws[i].amount.toFixed(2)+' to '+DB.withdraws[i].addr); renderAdmin();}
-function rejectWd(i){let w=DB.withdraws[i]; w.status='rejected'; let u=DB.users.find(x=>x.email==w.email); if(u) u.usdt+=w.amount; saveDB(); renderAdmin();}
-function approveClaim(i){let c=DB.claims[i]; c.status='approved'; let u=DB.users.find(x=>x.email==c.email); if(u) u.zfh+=c.reward; if(user && user.email==c.email) user.zfh+=c.reward; saveDB(); saveUser(); renderAdmin(); alert('Approved +'+c.reward+' ZFH');}
-function addTask(){let t=document.getElementById('taskTitle').value, r=parseInt(document.getElementById('taskReward').value), l=document.getElementById('taskLink').value; if(!t||!r) return alert('Fill title and reward'); DB.tasks.push({title:t,reward:r,link:l||'#'}); saveDB(); renderAdmin(); alert('Task added!');}
-// SECRET ADMIN ACCESS - Only via #zeefrosh-admin
-if(window.location.hash === '#zeefrosh-admin'){
-  setTimeout(()=>{ openAdminLogin(); }, 500);
+const ADMIN="habeebadekunlesamson@gmail.com";
+let user=JSON.parse(localStorage.getItem('zf_user')||'null');
+let device=localStorage.getItem('zf_device')||('DEV-'+Math.random().toString(36).slice(2,10).toUpperCase());
+localStorage.setItem('zf_device',device);
+let allUsers=JSON.parse(localStorage.getItem('zf_allUsers')||'{}');
+let pendings=JSON.parse(localStorage.getItem('zf_pendings')||'[]');
+let complaints=JSON.parse(localStorage.getItem('zf_complaints')||'[]');
+let withdraws=JSON.parse(localStorage.getItem('zf_withdraws')||'[]');
+
+const TASKS=[
+{id:1,title:"Follow @zeefrosh on TikTok",pay:150,link:"https://tiktok.com"},
+{id:2,title:"Subscribe to YouTube Channel",pay:200,link:"https://youtube.com"},
+{id:3,title:"Join Telegram Channel",pay:150,link:"https://t.me/"},
+{id:4,title:"Follow on Instagram",pay:150,link:"https://instagram.com"},
+{id:5,title:"Watch Ad / Visit Sponsor",pay:100,link:"https://google.com"},
+];
+
+function save(){localStorage.setItem('zf_allUsers',JSON.stringify(allUsers));localStorage.setItem('zf_pendings',JSON.stringify(pendings));localStorage.setItem('zf_complaints',JSON.stringify(complaints));localStorage.setItem('zf_withdraws',JSON.stringify(withdraws)); if(user) localStorage.setItem('zf_user',JSON.stringify(user));}
+function login(){
+ let e=document.getElementById('email').value.trim().toLowerCase(); let p=document.getElementById('pass').value.trim();
+ if(!e||!p) return alert("Put email and password");
+ // ONE DEVICE = ONE ACCOUNT
+ if(allUsers[device] && allUsers[device].email!==e) return alert("This phone don already get account: "+allUsers[device].email+". One Device = One Account.");
+ if(allUsers[device] && allUsers[device].pass!==p) return alert("Wrong password");
+ if(!allUsers[device]){ allUsers[device]={email:e,pass:p,balance:0,done:[]}; }
+ user={email:e,pass:p,balance:allUsers[device].balance||0,done:allUsers[device].done||[]};
+ save(); showApp();
 }
-if(user) showApp(); else goExplore();
+function showApp(){
+ if(!user) return;
+ document.getElementById('auth').classList.add('hidden');
+ document.getElementById('app').classList.remove('hidden');
+ document.getElementById('uEmail').innerText=user.email;
+ document.getElementById('bal').innerText=user.balance;
+ renderTasks(); renderHistory();
+}
+function renderTasks(){
+ let h="";
+ TASKS.forEach(t=>{
+  let done=user.done.includes(t.id);
+  let pending=pendings.find(x=>x.email===user.email && x.taskId===t.id);
+  h+=`<div class="task"><b>${t.title}</b><br>Pay: ₦${t.pay}<br>
+  ${done?'<b style="color:#22c55e">✅ DONE - Paid</b>':pending?'<b style="color:#facc15">⏳ Waiting Admin Approval</b>':`
+  <button onclick="startTask(${t.id})">Start Task - Open Link</button>
+  <div id="timer-${t.id}" class="small"></div>
+  <div id="proof-${t.id}" class="hidden"><input type="file" id="file-${t.id}" accept="image/*"><button onclick="submitProof(${t.id})">Submit Proof for Approval</button></div>
+  `}</div>`;
+ });
+ document.getElementById('tasks').innerHTML=h;
+}
+function startTask(id){
+ let t=TASKS.find(x=>x.id===id); window.open(t.link,'_blank');
+ let sec=20; let el=document.getElementById('timer-'+id);
+ el.innerHTML="Wait "+sec+" secs... No cheat, timer must finish";
+ let iv=setInterval(()=>{
+  sec--; el.innerHTML="Wait "+sec+" secs...";
+  if(sec<=0){ clearInterval(iv); el.innerHTML="✅ Time done! Now upload screenshot proof"; document.getElementById('proof-'+id).classList.remove('hidden'); }
+ },1000);
+}
+function submitProof(id){
+ let f=document.getElementById('file-'+id).files[0];
+ if(!f) return alert("Upload screenshot proof first!");
+ let t=TASKS.find(x=>x.id===id);
+ pendings.push({email:user.email,taskId:id,title:t.title,pay:t.pay,time:new Date().toLocaleString(),proof:f.name});
+ save(); alert("Proof sent! Admin go approve. Money go enter after approval."); renderTasks();
+}
+function withdraw(){
+ let amt=+document.getElementById('wAmt').value; let bank=document.getElementById('wBank').value; let acc=document.getElementById('wAcc').value; let name=document.getElementById('wName').value;
+ if(!amt||!acc||!name) return alert("Fill all withdraw details");
+ if(amt>user.balance) return alert("Balance no reach");
+ if(amt<500) return alert("Minimum withdraw na ₦500");
+ user.balance-=amt; allUsers[device].balance=user.balance; withdraws.push({email:user.email,amt,bank,acc,name,time:new Date().toLocaleString()}); save(); showApp(); alert("Withdraw request sent to Admin!");
+}
+function complain(){
+ let c=document.getElementById('complaint').value.trim(); if(!c) return alert("Write complaint");
+ complaints.push({email:user.email,msg:c,time:new Date().toLocaleString()}); save(); alert("Complaint sent to Admin. Admin email: habeebadekunlesamson@gmail.com"); document.getElementById('complaint').value="";
+}
+function renderHistory(){
+ let h="Pendings: "+pendings.filter(x=>x.email===user.email).length+"<br>Withdraws: "+withdraws.filter(x=>x.email===user.email).length;
+ document.getElementById('history').innerHTML=h;
+}
+function logout(){ localStorage.removeItem('zf_user'); location.reload(); }
+function openAdmin(){
+ let e=prompt("Admin Email:"); if(e && e.trim().toLowerCase()===ADMIN){
+  document.getElementById('adminPanel').classList.remove('hidden');
+  let h="<h3>Pendings</h3>";
+  pendings.forEach((p,i)=>{ h+=`<div class="task">${p.email} - ${p.title} - ₦${p.pay} - ${p.proof}<br><button onclick="approve(${i})">Approve + Pay</button><button onclick="reject(${i})" style="background:#ef4444">Reject</button></div>`; });
+  h+="<h3>Withdraws</h3>"; withdraws.forEach(w=>{ h+=`<div class="task">${w.email} - ₦${w.amt} - ${w.bank} ${w.acc} ${w.name}</div>`; });
+  h+="<h3>Complaints</h3>"; complaints.forEach(c=>{ h+=`<div class="task">${c.email}: ${c.msg}</div>`; });
+  document.getElementById('adminList').innerHTML=h||"No data";
+  window.scrollTo(0,document.body.scrollHeight);
+ } else alert("Not Admin");
+}
+function approve(i){
+ let p=pendings[i]; // find user by email
+ for(let d in allUsers){ if(allUsers[d].email===p.email){ allUsers[d].balance=(allUsers[d].balance||0)+p.pay; if(!allUsers[d].done.includes(p.taskId)) allUsers[d].done.push(p.taskId); if(user && user.email===p.email){ user.balance=allUsers[d].balance; user.done=allUsers[d].done; } } }
+ pendings.splice(i,1); save(); alert("Approved!"); openAdmin(); showApp();
+}
+function reject(i){ pendings.splice(i,1); save(); alert("Rejected"); openAdmin(); }
+if(user){ user.balance=allUsers[device]?.balance||0; user.done=allUsers[device]?.done||[]; showApp(); }
 </script>
 </body>
 </html>
-  
-  
