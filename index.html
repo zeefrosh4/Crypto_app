@@ -20,10 +20,10 @@
 <p class="small">Official channel: <a href="https://t.me/zeefrosh_official" target="_blank" rel="noopener">Join @zeefrosh_official ↗</a></p>
 <button id="telegramConnect">Generate Telegram linking button</button>
 <div id="telegramLinkBox" class="hidden item"></div>
-<button class="dark" id="telegramUserStatus">Check connection status</button>
+<button class="dark" id="telegramUserStatus">Refresh membership status</button>
 <button class="dark" id="telegramVerify">Verify channel membership</button>
-<p id="telegramUserResult" class="small" aria-live="polite">Telegram account is not checked yet.</p>
-<p class="small">Linking codes expire after 10 minutes. If one expires, generate a new link. This is a demo platform; verification does not create cash value or enable payouts.</p>
+<p id="telegramUserResult" class="small" aria-live="polite">Loading your Telegram status…</p>
+<p class="small">Your Telegram account only needs to be linked once. Membership is checked again when you refresh this status. This is a demo platform; verification does not create cash value or enable payouts.</p>
 </div><h3 class="gold" style="margin-top:24px">Your referral link</h3><p class="small">Referral tracking is display-only in this test build.</p><div id="ref" class="refBox"></div><button class="dark" id="copy">Copy referral link</button><button class="red" id="logout">Log out</button></div></section>
 <section id="page-admin" class="page"><div class="page-head"><div><div class="eyebrow">RESTRICTED AREA</div><h1>Admin dashboard</h1><p>Private management tools for the verified administrator.</p></div></div><div class="card"><button class="dark" id="back">← Back to home</button>
 <div class="card" style="border-color:#8a6d22">
@@ -33,7 +33,7 @@
 <button class="dark" id="telegramStatus">Check webhook status</button>
 <p id="telegramResult" class="small" aria-live="polite">Webhook setup has not yet been checked.</p>
 </div>
-<h3 class="gold">Publish task</h3><input id="taskTitle" placeholder="Task title"><input id="taskReward" type="number" placeholder="Demo points reward"><input id="taskUrl" type="url" placeholder="https:// task link"><button id="publish">Publish task</button><h3 class="gold">Tasks</h3><div id="adminTasks"></div><h3 class="gold">Submissions</h3><div id="submissions"></div><h3 class="gold">Demo withdrawal requests</h3><div id="requests"></div><h3 class="gold">Support inbox</h3><div id="inbox"></div></div></section></main></div><nav class="mobile-nav"><button class="nav-link active" data-page="home"><span class="nav-ico">⌂</span><span>Home</span></button><button class="nav-link" data-page="explore"><span class="nav-ico">⌕</span><span>Explore</span></button><button class="nav-link" data-page="tasks"><span class="nav-ico">▤</span><span>Tasks</span></button><button class="nav-link" data-page="wallet"><span class="nav-ico">◈</span><span>Wallet</span></button><button class="nav-link" data-page="profile"><span class="nav-ico">◎</span><span>Profile</span></button><button class="nav-link hidden" id="mobileAdminEntry" data-page="admin"><span class="nav-ico">⚙</span><span>Admin</span></button></nav></div>
+<div class="card" style="border-color:#8a6d22"><h3 class="gold">Telegram member directory</h3><p class="small">Live membership checks for linked accounts. A pending result means Telegram could not confirm the status; it does not mean the person left. This is a demo platform and does not authorize cash payouts.</p><button class="dark" id="refreshTelegramMembers">Refresh all Telegram membership statuses</button><div id="telegramMembersList" class="small">Open the admin panel to load member statuses.</div></div><h3 class="gold">Publish task</h3><input id="taskTitle" placeholder="Task title"><input id="taskReward" type="number" placeholder="Demo points reward"><input id="taskUrl" type="url" placeholder="https:// task link"><button id="publish">Publish task</button><h3 class="gold">Tasks</h3><div id="adminTasks"></div><h3 class="gold">Submissions</h3><div id="submissions"></div><h3 class="gold">Demo withdrawal requests</h3><div id="requests"></div><h3 class="gold">Support inbox</h3><div id="inbox"></div></div></section></main></div><nav class="mobile-nav"><button class="nav-link active" data-page="home"><span class="nav-ico">⌂</span><span>Home</span></button><button class="nav-link" data-page="explore"><span class="nav-ico">⌕</span><span>Explore</span></button><button class="nav-link" data-page="tasks"><span class="nav-ico">▤</span><span>Tasks</span></button><button class="nav-link" data-page="wallet"><span class="nav-ico">◈</span><span>Wallet</span></button><button class="nav-link" data-page="profile"><span class="nav-ico">◎</span><span>Profile</span></button><button class="nav-link hidden" id="mobileAdminEntry" data-page="admin"><span class="nav-ico">⚙</span><span>Admin</span></button></nav></div>
 <script>
 const firebaseConfig={apiKey:"AIzaSyC5ghQTKpMkgQTyhadHom6gKVu3o7_gXgo",authDomain:"zeefrosh.firebaseapp.com",projectId:"zeefrosh",storageBucket:"zeefrosh.firebasestorage.app",messagingSenderId:"105306614594",appId:"1:105306614594:web:81f1ad9aefba96606fb6db"};
 firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.firestore();const $=x=>document.getElementById(x),RATE=.0017;let me=null,admin=false,points=0,timer=null,tasks=[],offs=[];
@@ -50,7 +50,7 @@ async function session(u){me=u;points=Number(localStorage.getItem('zf_demo_'+u.u
 offs.push(db.collection('tasks').where('published','==',true).onSnapshot(s=>{tasks=s.docs.map(d=>({id:d.id,...d.data()}));renderTasks();if(admin)renderAdminTasks()},e=>say('taskList','Could not load tasks: '+e.message)));
 offs.push(db.collection('demo_withdrawals').where('uid','==',u.uid).onSnapshot(s=>renderMyRequests(s.docs.map(d=>d.data()))));
 offs.push(db.collection('support_messages').where('uid','==',u.uid).onSnapshot(s=>renderMessages(s.docs.map(d=>d.data()))));
-if(admin){offs.push(db.collection('submissions').onSnapshot(s=>renderSubmissions(s.docs.map(d=>({id:d.id,...d.data()})))));offs.push(db.collection('demo_withdrawals').onSnapshot(s=>renderAdminRequests(s.docs.map(d=>({id:d.id,...d.data()})))));offs.push(db.collection('support_messages').onSnapshot(s=>renderInbox(s.docs.map(d=>({id:d.id,...d.data()})))))}
+if(admin){loadTelegramAdminMembers();offs.push(db.collection('submissions').onSnapshot(s=>renderSubmissions(s.docs.map(d=>({id:d.id,...d.data()})))));offs.push(db.collection('demo_withdrawals').onSnapshot(s=>renderAdminRequests(s.docs.map(d=>({id:d.id,...d.data()})))));offs.push(db.collection('support_messages').onSnapshot(s=>renderInbox(s.docs.map(d=>({id:d.id,...d.data()})))))}
 }
 function renderTaskCards(box){box.innerHTML='';if(!tasks.length){box.textContent='No tasks published yet. Check back later.';return}tasks.forEach(t=>{let d=document.createElement('div');d.className='task';let b=document.createElement('b');b.className='gold';b.textContent=t.title;let p=document.createElement('p');p.className='small';p.textContent='Demo reward: '+t.reward+' points';let a=document.createElement('a');a.href=t.url;a.target='_blank';a.rel='noopener';a.textContent='Open task instructions ↗';let s=document.createElement('button');s.className='dark';s.textContent='Send test completion';s.onclick=async()=>{try{await db.collection('submissions').add({uid:me.uid,email:me.email||'',taskId:t.id,title:t.title,reward:Number(t.reward)||0,status:'pending',createdAt:firebase.firestore.FieldValue.serverTimestamp(),proofNote:'No image attached in this test build'});alert('Sent for admin review. No points are credited automatically.')}catch(e){alert(e.message)}};d.append(b,p,a,s);box.append(d)})}function renderTasks(){renderTaskCards($('taskList'));renderTaskCards($('exploreList'))}
 function miningKeys(){return{running:'zf_mining_running_'+me.uid,last:'zf_mining_last_'+me.uid}}
@@ -69,10 +69,10 @@ $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('ref').tex
 $('logout').onclick=async()=>{if(timer)stopMining();stopSubs();await auth.signOut()};
 $('openAdmin').onclick=()=>{if(admin)page('admin')};$('back').onclick=()=>page('tasks');
 const TELEGRAM_WORKER='https://zeefrosh-telegram-verifier.habeebadekunlesamson.workers.dev';
-async function telegramAdminRequest(path,method='GET'){
+async function telegramAdminRequest(path,method='GET',body=null){
   if(!me||!admin)throw new Error('Administrator sign-in is required.');
   const token=await auth.currentUser.getIdToken(true);
-  const response=await fetch(TELEGRAM_WORKER+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
+  const response=await fetch(TELEGRAM_WORKER+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});
   let data={};try{data=await response.json()}catch(e){}
   if(!response.ok||data.error)throw new Error(data.error||('Request failed ('+response.status+')'));
   return data;
@@ -100,26 +100,25 @@ $('telegramConnect').onclick=async()=>{
   }catch(e){result.textContent='Could not create Telegram link: '+e.message}
   finally{button.disabled=false}
 };
-$('telegramUserStatus').onclick=async()=>{
-  const button=$('telegramUserStatus'),result=$('telegramUserResult');
-  button.disabled=true;result.textContent='Checking your Telegram connection…';
-  try{
-    const data=await telegramUserRequest('/api/telegram/status');
-    result.textContent=data.linked
-      ? 'Telegram: Connected'+(data.telegramUsername?' (@'+data.telegramUsername+')':'')+' • Membership: '+(data.isMember?'Verified':'Not verified yet')
-      : 'Telegram: Not connected. Generate a linking link first.';
-  }catch(e){result.textContent='Status check failed: '+e.message}
-  finally{button.disabled=false}
-};
-$('telegramVerify').onclick=async()=>{
-  const button=$('telegramVerify'),result=$('telegramUserResult');
-  button.disabled=true;result.textContent='Checking membership in @zeefrosh_official…';
-  try{
-    const data=await telegramUserRequest('/api/telegram/verify','POST');
-    result.textContent=data.message|| (data.isMember?'Telegram channel membership verified.':'Join @zeefrosh_official, then try again.');
-  }catch(e){result.textContent='Verification failed: '+e.message}
-  finally{button.disabled=false}
-};
+function paintTelegramControls(data){
+ const linked=Boolean(data&&data.linked),verified=linked&&data.isMember===true;
+ $('telegramConnect').classList.toggle('hidden',linked);
+ $('telegramLinkBox').classList.add('hidden');
+ $('telegramVerify').classList.toggle('hidden',!linked||verified);
+ $('telegramUserStatus').classList.toggle('hidden',!linked);
+}
+async function loadTelegramStatus(checkLive=true){
+ const result=$('telegramUserResult');if(!me)return;
+ try{
+  const data=await telegramUserRequest('/api/telegram/status');
+  if(!data.linked){paintTelegramControls(data);result.textContent='Telegram is not connected yet. Link your Telegram account once to get started.';return}
+  if(checkLive){result.textContent='Telegram connected. Checking current channel membership…';const live=await telegramUserRequest('/api/telegram/verify','POST');data.isMember=live.isMember}
+  paintTelegramControls(data);
+  result.textContent='Telegram: Connected'+(data.telegramUsername?' (@'+data.telegramUsername+')':'')+' • '+(data.isMember?'Membership: Verified and active':'Membership: Not verified — join @zeefrosh_official and verify again');
+ }catch(e){result.textContent='Telegram status check pending: '+e.message+' You can retry using Refresh membership status.';$('telegramUserStatus').classList.remove('hidden')}
+}
+$('telegramUserStatus').onclick=async()=>{const b=$('telegramUserStatus');b.disabled=true;$('telegramUserResult').textContent='Refreshing current membership status…';try{await loadTelegramStatus(true)}finally{b.disabled=false}};
+$('telegramVerify').onclick=async()=>{const b=$('telegramVerify');b.disabled=true;$('telegramUserResult').textContent='Checking membership in @zeefrosh_official…';try{await telegramUserRequest('/api/telegram/verify','POST');await loadTelegramStatus(false)}catch(e){$('telegramUserResult').textContent='Verification failed: '+e.message}finally{b.disabled=false}};
 $('telegramSetup').onclick=async()=>{
   $('telegramResult').textContent='Registering webhook securely…';
   $('telegramSetup').disabled=true;
@@ -135,9 +134,21 @@ $('telegramStatus').onclick=async()=>{
   finally{$('telegramStatus').disabled=false}
 };
 $('publish').onclick=async()=>{let title=$('taskTitle').value.trim(),reward=Number($('taskReward').value),url=$('taskUrl').value.trim();if(!admin)return;if(!title||reward<=0||!/^https:\/\//i.test(url))return alert('Enter title, positive reward and https link');try{await db.collection('tasks').add({title,reward,url,published:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});$('taskTitle').value='';$('taskReward').value='';$('taskUrl').value='';alert('Task published')}catch(e){alert(e.message)}};
+async function loadTelegramAdminMembers(){
+ const box=$('telegramMembersList');if(!admin||!me)return;box.textContent='Loading account directory…';
+ try{
+  const snap=await db.collection('profiles').get();
+  const users=snap.docs.map(d=>({uid:d.id,email:d.data().email||'',username:d.data().username||''}));
+  if(!users.length){box.textContent='No user profiles found.';return}
+  const data=await telegramAdminRequest('/api/telegram/admin-membership','POST',{uids:users.map(u=>u.uid)});
+  const byUid=new Map(data.results.map(x=>[x.uid,x]));box.textContent='';
+  users.forEach(user=>{const st=byUid.get(user.uid)||{membershipStatus:'check-pending'};const item=document.createElement('div');item.className='item';const title=document.createElement('b');title.textContent=user.username||user.email||user.uid;const detail=document.createElement('p');detail.className='small';const label={'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[st.membershipStatus]||'Check pending';detail.textContent=label+(st.telegramUsername?' • @'+st.telegramUsername:'')+(st.checkedAt?' • Checked '+new Date(st.checkedAt).toLocaleString():'');item.append(title,detail);box.append(item)});
+ }catch(e){box.textContent='Could not load Telegram member statuses: '+e.message}
+}
+$('refreshTelegramMembers').onclick=async()=>{const b=$('refreshTelegramMembers');b.disabled=true;try{await loadTelegramAdminMembers()}finally{b.disabled=false}};
 function renderAdminTasks(){if(!admin)return;$('adminTasks').innerHTML='';tasks.forEach(t=>{let d=document.createElement('div');d.className='item';d.textContent=t.title+' — '+t.reward+' points';let b=document.createElement('button');b.className='red';b.textContent='Delete';b.onclick=()=>db.collection('tasks').doc(t.id).delete();d.append(b);$('adminTasks').append(d)})}
 function renderSubmissions(a){$('submissions').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+' — '+x.title+' — '+x.status+' (no proof image)';if(x.status==='pending'){let b=document.createElement('button');b.textContent='Mark reviewed';b.onclick=()=>db.collection('submissions').doc(x.id).update({status:'reviewed'});d.append(b)}$('submissions').append(d)})}
 function renderAdminRequests(a){$('requests').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+' — ₦'+x.amount+' — '+x.status;$('requests').append(d)})}
 function renderInbox(a){$('inbox').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+': '+x.message;if(x.from==='user'){let b=document.createElement('button');b.textContent='Reply';b.onclick=async()=>{let r=prompt('Reply message');if(r)await db.collection('support_messages').add({uid:x.uid,email:x.email||'',message:r,from:'admin',createdAt:firebase.firestore.FieldValue.serverTimestamp()})};d.append(b)}$('inbox').append(d)})}
-auth.onAuthStateChanged(u=>{if(u)session(u).catch(e=>say('authMsg','Setup error: '+e.message));else{me=null;admin=false;$('app').classList.add('hidden');$('auth').classList.remove('hidden')}});
+auth.onAuthStateChanged(u=>{if(u)session(u).then(()=>loadTelegramStatus(true)).catch(e=>say('authMsg','Setup error: '+e.message));else{me=null;admin=false;$('app').classList.add('hidden');$('auth').classList.remove('hidden')}});
 </script></body></html>
