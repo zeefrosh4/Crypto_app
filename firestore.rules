@@ -4,7 +4,17 @@ service cloud.firestore {
   function signedIn(){return request.auth != null;}
   function admin(){return signedIn() && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)) && get(/databases/$(database)/documents/admin_users/$(request.auth.uid)).data.active == true;}
   match /admin_users/{uid}{allow read: if admin() || (signedIn() && request.auth.uid==uid);allow write: if false;}
-  match /profiles/{uid}{allow read: if signedIn() && (request.auth.uid==uid || admin());allow create: if signedIn() && request.auth.uid==uid && request.resource.data.keys().hasOnly(['email','createdAt']);allow update,delete: if admin();}
+  match /profiles/{uid}{
+   allow read: if signedIn() && (request.auth.uid==uid || admin());
+   allow create: if signedIn()
+     && request.auth.uid==uid
+     && request.resource.data.keys().hasAll(['email','username','createdAt'])
+     && request.resource.data.keys().hasOnly(['email','username','createdAt'])
+     && request.resource.data.email is string
+     && request.resource.data.username is string
+     && request.resource.data.createdAt is timestamp;
+   allow update,delete: if admin();
+  }
   match /tasks/{id}{allow read: if signedIn();allow create: if admin() && request.resource.data.keys().hasOnly(['title','reward','url','published','createdAt']) && request.resource.data.published==true;allow update,delete: if admin();}
   match /submissions/{id}{allow create: if signedIn() && request.resource.data.uid==request.auth.uid && request.resource.data.status=='pending' && request.resource.data.keys().hasOnly(['uid','email','taskId','title','reward','status','createdAt','proofNote']);allow read: if signedIn() && (resource.data.uid==request.auth.uid || admin());allow update,delete: if admin();}
   match /demo_withdrawals/{id}{allow create: if signedIn() && request.resource.data.uid==request.auth.uid && request.resource.data.status=='test-only' && request.resource.data.keys().hasOnly(['uid','email','amount','status','createdAt']);allow read: if signedIn() && (resource.data.uid==request.auth.uid || admin());allow update,delete: if admin();}
