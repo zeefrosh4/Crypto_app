@@ -14,7 +14,17 @@
 <section id="page-tasks" class="page"><div class="page-head"><div><div class="eyebrow">YOUR WORKSPACE</div><h1>Tasks</h1><p>Review task details and submit your test completion.</p></div></div><div class="card"><div id="taskList">Loading tasks…</div></div></section>
 <section id="page-wallet" class="page"><div class="page-head"><div><div class="eyebrow">ACCOUNT</div><h1>Wallet</h1><p>View simulated points and test request history.</p></div></div><div class="grid-3" style="margin-bottom:18px"><div class="stat"><div class="stat-label">Demo balance</div><div class="stat-value">₦<span id="walletBal">0.0000</span></div></div><div class="stat"><div class="stat-label">Minimum request</div><div class="stat-value">₦500</div></div><div class="stat"><div class="stat-label">Payout status</div><div class="stat-value" style="font-size:16px">Disabled</div></div></div><div class="card"><h3 class="gold">Create a test request</h3><p class="small">No bank details, crypto addresses or payments are collected. These are test records only and have no cash value.</p><button class="dark" id="testCredit">＋ Add ₦500 test points (local only)</button><input id="amount" type="number" min="500" placeholder="Demo request amount (minimum ₦500)"><button id="request">Submit demo request</button><h3 class="gold" style="margin-top:24px">Request history</h3><div id="myRequests"></div></div></section>
 <section id="page-support" class="page"><div class="page-head"><div><div class="eyebrow">WE'RE HERE TO HELP</div><h1>Support centre</h1><p>Send a message and view replies from the support team.</p></div></div><div class="card"><div id="messages"></div><textarea id="message" rows="4" placeholder="How can we help you?"></textarea><button id="send">Send message</button></div></section>
-<section id="page-profile" class="page"><div class="page-head"><div><div class="eyebrow">YOUR ACCOUNT</div><h1>Profile</h1><p>Manage your account details and referral information.</p></div></div><div class="card"><h3 class="gold">Account information</h3><p id="who"></p><p class="small">Account ID: <span id="uid"></span></p><h3 class="gold" style="margin-top:24px">Your referral link</h3><p class="small">Referral tracking is display-only in this test build.</p><div id="ref" class="refBox"></div><button class="dark" id="copy">Copy referral link</button><button class="red" id="logout">Log out</button></div></section>
+<section id="page-profile" class="page"><div class="page-head"><div><div class="eyebrow">YOUR ACCOUNT</div><h1>Profile</h1><p>Manage your account details and referral information.</p></div></div><div class="card"><h3 class="gold">Account information</h3><p id="who"></p><p class="small">Account ID: <span id="uid"></span></p><div class="card" style="margin-top:18px;border-color:#8a6d22">
+<h3 class="gold">Telegram membership verification</h3>
+<p class="small">Connect one Telegram account to your ZEEFROSH account, then verify that you have joined the official channel. Your Telegram account ID is kept private.</p>
+<p class="small">Official channel: <a href="https://t.me/zeefrosh_official" target="_blank" rel="noopener">Join @zeefrosh_official ↗</a></p>
+<button id="telegramConnect">Generate Telegram linking button</button>
+<div id="telegramLinkBox" class="hidden item"></div>
+<button class="dark" id="telegramUserStatus">Check connection status</button>
+<button class="dark" id="telegramVerify">Verify channel membership</button>
+<p id="telegramUserResult" class="small" aria-live="polite">Telegram account is not checked yet.</p>
+<p class="small">Linking codes expire after 10 minutes. If one expires, generate a new link. This is a demo platform; verification does not create cash value or enable payouts.</p>
+</div><h3 class="gold" style="margin-top:24px">Your referral link</h3><p class="small">Referral tracking is display-only in this test build.</p><div id="ref" class="refBox"></div><button class="dark" id="copy">Copy referral link</button><button class="red" id="logout">Log out</button></div></section>
 <section id="page-admin" class="page"><div class="page-head"><div><div class="eyebrow">RESTRICTED AREA</div><h1>Admin dashboard</h1><p>Private management tools for the verified administrator.</p></div></div><div class="card"><button class="dark" id="back">← Back to home</button>
 <div class="card" style="border-color:#8a6d22">
 <h3 class="gold">Telegram membership verification</h3>
@@ -67,6 +77,49 @@ async function telegramAdminRequest(path,method='GET'){
   if(!response.ok||data.error)throw new Error(data.error||('Request failed ('+response.status+')'));
   return data;
 }
+async function telegramUserRequest(path,method='GET'){
+  if(!me)throw new Error('Please sign in first.');
+  const token=await auth.currentUser.getIdToken(true);
+  const response=await fetch(TELEGRAM_WORKER+path,{method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
+  let data={};try{data=await response.json()}catch(e){}
+  if(!response.ok||data.error)throw new Error(data.error||('Request failed ('+response.status+')'));
+  return data;
+}
+$('telegramConnect').onclick=async()=>{
+  const button=$('telegramConnect'),box=$('telegramLinkBox'),result=$('telegramUserResult');
+  button.disabled=true;box.classList.add('hidden');result.textContent='Creating a secure one-time Telegram link…';
+  try{
+    const data=await telegramUserRequest('/api/telegram/challenge','POST');
+    const link=new URL(data.telegramLink);
+    if(link.hostname!=='t.me'||link.protocol!=='https:')throw new Error('The Worker returned an unexpected Telegram link.');
+    box.textContent='';
+    const note=document.createElement('p');note.className='small';note.textContent='Your one-time link is ready. It expires in 10 minutes. Open it in Telegram, then return here.';
+    const anchor=document.createElement('a');anchor.href=link.href;anchor.target='_blank';anchor.rel='noopener';anchor.textContent='Open ZEEFROSH verification bot ↗';
+    box.append(note,anchor);box.classList.remove('hidden');
+    result.textContent='Link created. Open the bot link above and press Start in Telegram.';
+  }catch(e){result.textContent='Could not create Telegram link: '+e.message}
+  finally{button.disabled=false}
+};
+$('telegramUserStatus').onclick=async()=>{
+  const button=$('telegramUserStatus'),result=$('telegramUserResult');
+  button.disabled=true;result.textContent='Checking your Telegram connection…';
+  try{
+    const data=await telegramUserRequest('/api/telegram/status');
+    result.textContent=data.linked
+      ? 'Telegram: Connected'+(data.telegramUsername?' (@'+data.telegramUsername+')':'')+' • Membership: '+(data.isMember?'Verified':'Not verified yet')
+      : 'Telegram: Not connected. Generate a linking link first.';
+  }catch(e){result.textContent='Status check failed: '+e.message}
+  finally{button.disabled=false}
+};
+$('telegramVerify').onclick=async()=>{
+  const button=$('telegramVerify'),result=$('telegramUserResult');
+  button.disabled=true;result.textContent='Checking membership in @zeefrosh_official…';
+  try{
+    const data=await telegramUserRequest('/api/telegram/verify','POST');
+    result.textContent=data.message|| (data.isMember?'Telegram channel membership verified.':'Join @zeefrosh_official, then try again.');
+  }catch(e){result.textContent='Verification failed: '+e.message}
+  finally{button.disabled=false}
+};
 $('telegramSetup').onclick=async()=>{
   $('telegramResult').textContent='Registering webhook securely…';
   $('telegramSetup').disabled=true;
