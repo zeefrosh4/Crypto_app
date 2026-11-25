@@ -187,6 +187,37 @@ function renderMemberDirectory(){
   const h=document.createElement('h3');h.className='gold';h.textContent='Member account details';details.append(h);
   const add=(label,value)=>{const p=document.createElement('p');p.className='small';p.textContent=label+': '+(value||'Not available');details.append(p)};
   add('Username',m.username);add('Email',m.email);add('Firebase account ID',m.uid);add('Registration date',m.createdAt?m.createdAt.toLocaleString():'Not available');add('Telegram account',m.telegramUsername?'@'+m.telegramUsername:'Not linked');add('Telegram membership',({'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[m.membershipStatus]||'Check pending'));add('Last membership check',m.checkedAt?new Date(m.checkedAt).toLocaleString():'Not checked');
+  const history=document.createElement('div');history.className='item';history.style.marginTop='14px';
+  const historyTitle=document.createElement('h3');historyTitle.className='gold';historyTitle.textContent='Wallet & activity history';history.append(historyTitle);
+  const balanceNote=document.createElement('p');balanceNote.className='small';balanceNote.textContent='Current demo balance: Not available to admin. Mining points are stored locally in the member’s browser and are not centrally recorded.';history.append(balanceNote);
+  const load=document.createElement('button');load.className='dark';load.textContent='Load wallet & activity history';
+  const results=document.createElement('div');results.className='small';results.textContent='History has not been loaded yet.';
+  load.onclick=async()=>{
+   if(!admin||!me){results.textContent='Administrator sign-in is required.';return}
+   load.disabled=true;results.textContent='Loading this member’s records…';
+   try{
+    const [withdrawals,submissions]=await Promise.all([
+     db.collection('demo_withdrawals').where('uid','==',m.uid).get(),
+     db.collection('submissions').where('uid','==',m.uid).get()
+    ]);
+    results.textContent='';
+    const section=(heading,docs,format)=>{
+     const wrap=document.createElement('div');wrap.style.marginTop='12px';
+     const title=document.createElement('b');title.className='gold';title.textContent=heading+' ('+docs.size+')';wrap.append(title);
+     if(docs.empty){const p=document.createElement('p');p.className='small';p.textContent='No records yet.';wrap.append(p)}
+     else{
+      docs.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+       const ta=a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0,tb=b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0;return tb-ta;
+      }).forEach(record=>{const p=document.createElement('p');p.className='small';p.textContent=format(record);wrap.append(p)});
+     }
+     results.append(wrap);
+    };
+    section('Demo wallet requests',withdrawals,x=>'₦'+(Number(x.amount)||0).toLocaleString()+' • '+(x.status||'Unknown')+' • Request ID: '+x.id);
+    section('Task submissions',submissions,x=>(x.title||'Task')+' • '+(x.status||'Unknown')+' • Submission ID: '+x.id);
+   }catch(e){results.textContent='Could not load member history: '+e.message}
+   finally{load.disabled=false}
+  };
+  history.append(load,results);details.append(history);
   item.append(head,view,details);box.append(item);
  });
 }
