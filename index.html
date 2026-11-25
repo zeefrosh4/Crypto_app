@@ -212,7 +212,24 @@ function renderMemberDirectory(){
      }
      results.append(wrap);
     };
-    section('Demo wallet requests',withdrawals,x=>'₦'+(Number(x.amount)||0).toLocaleString()+' • '+(x.status||'Unknown')+' • Request ID: '+x.id);
+    const requestRecords=withdrawals.docs.map(d=>({id:d.id,...d.data()}));
+    const amountOf=x=>{const n=Number(x.amount);return Number.isFinite(n)?n:0};
+    const sumWhere=fn=>requestRecords.filter(fn).reduce((total,x)=>total+amountOf(x),0);
+    const totalRequested=requestRecords.reduce((total,x)=>total+amountOf(x),0);
+    const pendingAmount=sumWhere(x=>x.status==='test-only');
+    const reviewedAmount=sumWhere(x=>x.status==='reviewed');
+    const rejectedAmount=sumWhere(x=>x.status==='rejected');
+    const summary=document.createElement('div');summary.className='grid-2';summary.style.marginTop='12px';
+    const metric=(label,value)=>{const card=document.createElement('div');card.className='stat';const name=document.createElement('div');name.className='stat-label';name.textContent=label;const number=document.createElement('div');number.className='stat-value';number.style.fontSize='18px';number.textContent=value;card.append(name,number);summary.append(card)};
+    metric('Total demo requests',String(requestRecords.length));
+    metric('Total amount requested','₦'+totalRequested.toLocaleString());
+    metric('Pending demo amount','₦'+pendingAmount.toLocaleString());
+    metric('Reviewed demo amount','₦'+reviewedAmount.toLocaleString());
+    metric('Rejected demo amount','₦'+rejectedAmount.toLocaleString());
+    metric('Actual cash withdrawn','₦0');
+    results.append(summary);
+    const payoutNote=document.createElement('p');payoutNote.className='small';payoutNote.textContent='All records above are simulated demo requests. “Reviewed” does not mean approved or paid. Actual cash payouts are disabled, so the real amount withdrawn is ₦0.';results.append(payoutNote);
+    section('Demo wallet requests',withdrawals,x=>'₦'+amountOf(x).toLocaleString()+' • '+(x.status||'Unknown')+' • '+(x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():'Date unavailable')+' • Request ID: '+x.id);
     section('Task submissions',submissions,x=>(x.title||'Task')+' • '+(x.status||'Unknown')+' • Submission ID: '+x.id);
    }catch(e){results.textContent='Could not load member history: '+e.message}
    finally{load.disabled=false}
