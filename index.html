@@ -243,6 +243,42 @@ function renderMemberDirectory(){
    finally{load.disabled=false}
   };
   history.append(load,results);details.append(history);
+  const notes=document.createElement('div');notes.className='item';notes.style.marginTop='14px';
+  const notesTitle=document.createElement('h3');notesTitle.className='gold';notesTitle.textContent='Private admin notes';
+  const notesHelp=document.createElement('p');notesHelp.className='small';notesHelp.textContent='Private to verified administrators. Members cannot see these notes.';
+  const noteInput=document.createElement('textarea');noteInput.rows=3;noteInput.maxLength=2000;noteInput.placeholder='Record an observation, support issue, or follow-up reminder…';
+  const saveNote=document.createElement('button');saveNote.className='dark';saveNote.textContent='Save private note';
+  const notesList=document.createElement('div');notesList.className='small';notesList.textContent='Loading private notes…';
+  const renderNotes=async()=>{
+   if(!admin||!me){notesList.textContent='Administrator access is required.';return}
+   notesList.textContent='Loading private notes…';
+   try{
+    const snap=await db.collection('admin_member_notes').where('uid','==',m.uid).get();
+    notesList.textContent='';
+    if(snap.empty){notesList.textContent='No private notes recorded for this member.';return}
+    snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>{
+     const ta=a.createdAt&&a.createdAt.toMillis?a.createdAt.toMillis():0,tb=b.createdAt&&b.createdAt.toMillis?b.createdAt.toMillis():0;return tb-ta;
+    }).forEach(n=>{
+     const card=document.createElement('div');card.className='item';card.style.margin='8px 0';
+     const body=document.createElement('p');body.style.whiteSpace='pre-wrap';body.textContent=n.note||'';
+     const meta=document.createElement('p');meta.className='small';meta.textContent=(n.createdAt&&n.createdAt.toDate?n.createdAt.toDate().toLocaleString():'Date unavailable')+' • Admin UID: '+(n.createdBy||'Not available');
+     card.append(body,meta);notesList.append(card);
+    });
+   }catch(e){notesList.textContent='Could not load private notes: '+e.message}
+  };
+  saveNote.onclick=async()=>{
+   const value=noteInput.value.trim();
+   if(!admin||!me){notesList.textContent='Administrator access is required.';return}
+   if(!value){alert('Write a note before saving.');return}
+   saveNote.disabled=true;
+   try{
+    await db.collection('admin_member_notes').add({uid:m.uid,note:value,createdAt:firebase.firestore.FieldValue.serverTimestamp(),createdBy:me.uid});
+    noteInput.value='';await renderNotes();
+   }catch(e){alert('Could not save private note: '+e.message)}
+   finally{saveNote.disabled=false}
+  };
+  notes.append(notesTitle,notesHelp,noteInput,saveNote,notesList);details.append(notes);
+  renderNotes();
   item.append(head,view,details);box.append(item);
  });
 }
