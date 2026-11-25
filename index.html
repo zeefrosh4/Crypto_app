@@ -211,7 +211,35 @@ async function loadTelegramAdminMembers(){
 $('refreshTelegramMembers').onclick=async()=>{const b=$('refreshTelegramMembers');b.disabled=true;try{await loadTelegramAdminMembers()}finally{b.disabled=false}};
 function renderAdminTasks(){if(!admin)return;$('adminTasks').innerHTML='';tasks.forEach(t=>{let d=document.createElement('div');d.className='item';d.textContent=t.title+' — '+t.reward+' points';let b=document.createElement('button');b.className='red';b.textContent='Delete';b.onclick=()=>db.collection('tasks').doc(t.id).delete();d.append(b);$('adminTasks').append(d)})}
 function renderSubmissions(a){$('submissions').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+' — '+x.title+' — '+x.status+' (no proof image)';if(x.status==='pending'){let b=document.createElement('button');b.textContent='Mark reviewed';b.onclick=()=>db.collection('submissions').doc(x.id).update({status:'reviewed'});d.append(b)}$('submissions').append(d)})}
-function renderAdminRequests(a){$('requests').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+' — ₦'+x.amount+' — '+x.status;$('requests').append(d)})}
+function renderAdminRequests(a){
+ const box=$('requests');box.innerHTML='';
+ if(!a.length){box.textContent='No demo wallet requests yet.';return}
+ a.sort((x,y)=>{const tx=x.createdAt&&x.createdAt.toMillis?x.createdAt.toMillis():0,ty=y.createdAt&&y.createdAt.toMillis?y.createdAt.toMillis():0;return ty-tx});
+ a.forEach(x=>{
+  const d=document.createElement('div');d.className='item';
+  const member=adminMembers.find(m=>m.uid===x.uid);
+  const heading=document.createElement('h3');heading.className='gold';heading.textContent='₦'+(Number(x.amount)||0).toLocaleString()+' • '+(x.status||'Unknown status');
+  const line=(label,value)=>{const p=document.createElement('p');p.className='small';p.textContent=label+': '+(value||'Not available');d.append(p)};
+  d.append(heading);
+  line('Member',member&&(member.username||member.email)||x.email||'Member account');
+  line('Email',x.email);
+  line('Firebase account ID',x.uid);
+  line('Request ID',x.id);
+  line('Submitted',x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():'Not available');
+  line('Request type','Demo-only record — no money or payment is involved');
+  if(x.status==='test-only'){
+   const actions=document.createElement('div');actions.className='row';
+   const reviewed=document.createElement('button');reviewed.className='dark';reviewed.textContent='Mark reviewed';
+   reviewed.onclick=async()=>{if(!admin||!confirm('Mark this demo request as reviewed? This does not make a payment.'))return;reviewed.disabled=true;try{await db.collection('demo_withdrawals').doc(x.id).update({status:'reviewed',reviewedAt:firebase.firestore.FieldValue.serverTimestamp(),reviewedBy:me.uid})}catch(e){alert('Could not update request: '+e.message);reviewed.disabled=false}};
+   const rejected=document.createElement('button');rejected.className='red';rejected.textContent='Reject test request';
+   rejected.onclick=async()=>{if(!admin||!confirm('Reject this demo request? This does not affect any real funds.'))return;rejected.disabled=true;try{await db.collection('demo_withdrawals').doc(x.id).update({status:'rejected',reviewedAt:firebase.firestore.FieldValue.serverTimestamp(),reviewedBy:me.uid})}catch(e){alert('Could not update request: '+e.message);rejected.disabled=false}};
+   actions.append(reviewed,rejected);d.append(actions);
+  }else{
+   const note=document.createElement('p');note.className='small';note.textContent='This request has already been reviewed. No payout action is available.';d.append(note);
+  }
+  box.append(d);
+ });
+}
 function renderInbox(a){$('inbox').innerHTML='';a.forEach(x=>{let d=document.createElement('div');d.className='item';d.textContent=(x.email||x.uid)+': '+x.message;if(x.from==='user'){let b=document.createElement('button');b.textContent='Reply';b.onclick=async()=>{let r=prompt('Reply message');if(r)await db.collection('support_messages').add({uid:x.uid,email:x.email||'',message:r,from:'admin',createdAt:firebase.firestore.FieldValue.serverTimestamp()})};d.append(b)}$('inbox').append(d)})}
 auth.onAuthStateChanged(u=>{if(u)session(u).then(()=>loadTelegramStatus(true)).catch(e=>say('authMsg','Setup error: '+e.message));else{me=null;admin=false;$('app').classList.add('hidden');$('auth').classList.remove('hidden')}});
 </script></body></html>
