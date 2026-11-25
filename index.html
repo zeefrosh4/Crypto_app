@@ -231,6 +231,14 @@ function renderMemberDirectory(){
     const payoutNote=document.createElement('p');payoutNote.className='small';payoutNote.textContent='All records above are simulated demo requests. “Reviewed” does not mean approved or paid. Actual cash payouts are disabled, so the real amount withdrawn is ₦0.';results.append(payoutNote);
     section('Demo wallet requests',withdrawals,x=>'₦'+amountOf(x).toLocaleString()+' • '+(x.status||'Unknown')+' • '+(x.createdAt&&x.createdAt.toDate?x.createdAt.toDate().toLocaleString():'Date unavailable')+' • Request ID: '+x.id);
     section('Task submissions',submissions,x=>(x.title||'Task')+' • '+(x.status||'Unknown')+' • Submission ID: '+x.id);
+    const timelineTitle=document.createElement('h3');timelineTitle.className='gold';timelineTitle.style.marginTop='20px';timelineTitle.textContent='Member activity timeline';results.append(timelineTitle);
+    const events=[];
+    withdrawals.docs.forEach(d=>{const x=d.data();if(x.createdAt&&x.createdAt.toDate)events.push({time:x.createdAt.toDate(),label:'Demo wallet request submitted',detail:'₦'+amountOf(x).toLocaleString()+' • '+(x.status||'Unknown')+' • Request ID: '+d.id});if(x.reviewedAt&&x.reviewedAt.toDate)events.push({time:x.reviewedAt.toDate(),label:'Demo wallet request reviewed',detail:'Current status: '+(x.status||'Unknown')+' • Request ID: '+d.id});});
+    submissions.docs.forEach(d=>{const x=d.data();if(x.createdAt&&x.createdAt.toDate)events.push({time:x.createdAt.toDate(),label:'Task submission recorded',detail:(x.title||'Task')+' • '+(x.status||'Unknown')+' • Submission ID: '+d.id});});
+    events.sort((a,b)=>b.time-a.time);
+    if(!events.length){const empty=document.createElement('p');empty.className='small';empty.textContent='No timestamped activity events are available for this member yet.';results.append(empty);}
+    else{const list=document.createElement('div');list.style.marginTop='10px';events.forEach(event=>{const card=document.createElement('div');card.className='item';card.style.margin='8px 0';const title=document.createElement('b');title.className='gold';title.textContent=event.label;const date=document.createElement('p');date.className='small';date.textContent=event.time.toLocaleString();const detail=document.createElement('p');detail.className='small';detail.textContent=event.detail;card.append(title,date,detail);list.append(card)});results.append(list);}
+    const timelineNote=document.createElement('p');timelineNote.className='small';timelineNote.textContent='Timeline includes only timestamped demo wallet requests, recorded review actions, and task submissions currently stored in the database. Older or locally stored mining activity may not appear.';results.append(timelineNote);
    }catch(e){results.textContent='Could not load member history: '+e.message}
    finally{load.disabled=false}
   };
