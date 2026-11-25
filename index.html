@@ -47,7 +47,7 @@
 <div class="card"><h3 class="gold">Security reminders</h3><p class="small">Admin access remains restricted to the verified administrator account. Member records are identified by their Firebase account UID. Wallet requests shown here are demo records only; no real payments or bank details are handled.</p></div>
 </section>
 <section class="admin-panel" id="admin-panel-members">
-<div class="card"><h3 class="gold">Member directory</h3><p class="small">Search registered accounts and inspect their account identifiers and Telegram membership status. Only the verified administrator can access this directory.</p><div class="grid-3"><div class="stat"><div class="stat-label">Registered accounts</div><div class="stat-value" id="memberCount">—</div></div><div class="stat"><div class="stat-label">Active Telegram members</div><div class="stat-value" id="memberActiveCount">—</div></div><div class="stat"><div class="stat-label">Not verified / pending</div><div class="stat-value" id="memberOtherCount">—</div></div></div><input id="memberSearch" type="search" placeholder="Search username, email or account ID" autocomplete="off"><div id="memberDirectoryList" aria-live="polite" class="small">Loading member directory…</div><div id="memberDetail" class="item hidden"></div></div>
+<div class="card"><h3 class="gold">Member directory</h3><p class="small">Search registered accounts and inspect their account identifiers and Telegram membership status. Only the verified administrator can access this directory.</p><div class="grid-3"><div class="stat"><div class="stat-label">Registered accounts</div><div class="stat-value" id="memberCount">—</div></div><div class="stat"><div class="stat-label">Active Telegram members</div><div class="stat-value" id="memberActiveCount">—</div></div><div class="stat"><div class="stat-label">Not verified / pending</div><div class="stat-value" id="memberOtherCount">—</div></div></div><input id="memberSearch" type="search" placeholder="Search username, email or account ID" autocomplete="off"><div id="memberDirectoryList" aria-live="polite" class="small">Loading member directory…</div></div>
 <div class="card" style="border-color:#8a6d22"><h3 class="gold">Telegram webhook</h3><p class="small">Securely register the ZEEFROSH Telegram bot webhook. This uses your signed-in administrator account; no bot token is entered or displayed here.</p><button id="telegramSetup">Register Telegram webhook</button><button class="dark" id="telegramStatus">Check webhook status</button><p id="telegramResult" class="small" aria-live="polite">Webhook setup has not yet been checked.</p></div>
 <div class="card" style="border-color:#8a6d22"><h3 class="gold">Telegram member directory</h3><p class="small">Live membership checks for linked accounts. A pending result means Telegram could not confirm the status; it does not mean the person left. This is a demo platform and does not authorize cash payouts.</p><button class="dark" id="refreshTelegramMembers">Refresh all Telegram membership statuses</button><div id="telegramMembersList" class="small">Open the admin panel to load member statuses.</div></div>
 </section>
@@ -181,16 +181,14 @@ function renderMemberDirectory(){
   const title=document.createElement('b');title.className='gold';title.textContent=m.username||m.email||'Member';
   const status=document.createElement('span');status.className='pill-tag';status.textContent=({'active':'Telegram active','left-channel':'Left channel','not-linked':'Not linked','check-pending':'Check pending'}[m.membershipStatus]||'Check pending');
   head.append(title,status);
-  const view=document.createElement('button');view.className='dark';view.textContent='View account details';view.onclick=()=>showMemberDetail(m);
-  item.append(head,view);box.append(item);
+  const details=document.createElement('div');details.className='hidden';details.style.marginTop='12px';details.style.paddingTop='10px';details.style.borderTop='1px solid var(--line)';
+  const view=document.createElement('button');view.className='dark';view.textContent='View account details';
+  view.onclick=()=>{const opening=details.classList.contains('hidden');details.classList.toggle('hidden',!opening);view.textContent=opening?'Close account details':'View account details';};
+  const h=document.createElement('h3');h.className='gold';h.textContent='Member account details';details.append(h);
+  const add=(label,value)=>{const p=document.createElement('p');p.className='small';p.textContent=label+': '+(value||'Not available');details.append(p)};
+  add('Username',m.username);add('Email',m.email);add('Firebase account ID',m.uid);add('Registration date',m.createdAt?m.createdAt.toLocaleString():'Not available');add('Telegram account',m.telegramUsername?'@'+m.telegramUsername:'Not linked');add('Telegram membership',({'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[m.membershipStatus]||'Check pending'));add('Last membership check',m.checkedAt?new Date(m.checkedAt).toLocaleString():'Not checked');
+  item.append(head,view,details);box.append(item);
  });
-}
-function showMemberDetail(m){
- const box=$('memberDetail');box.classList.remove('hidden');box.textContent='';
- const h=document.createElement('h3');h.className='gold';h.textContent='Member account details';
- const add=(label,value)=>{const p=document.createElement('p');p.className='small';p.textContent=label+': '+(value||'Not available');box.append(p)};
- box.append(h);add('Username',m.username);add('Email',m.email);add('Firebase account ID',m.uid);add('Registration date',m.createdAt?m.createdAt.toLocaleString():'Not available');add('Telegram account',m.telegramUsername?'@'+m.telegramUsername:'Not linked');add('Telegram membership',({'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[m.membershipStatus]||'Check pending'));add('Last membership check',m.checkedAt?new Date(m.checkedAt).toLocaleString():'Not checked');
- const close=document.createElement('button');close.className='dark';close.textContent='Close details';close.onclick=()=>box.classList.add('hidden');box.append(close);
 }
 $('memberSearch').addEventListener('input',renderMemberDirectory);
 async function loadTelegramAdminMembers(){
