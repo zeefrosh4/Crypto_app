@@ -181,10 +181,8 @@ function renderMemberDirectory(){
   const title=document.createElement('b');title.className='gold';title.textContent=m.username||m.email||'Member';
   const status=document.createElement('span');status.className='pill-tag';status.textContent=({'active':'Telegram active','left-channel':'Left channel','not-linked':'Not linked','check-pending':'Check pending'}[m.membershipStatus]||'Check pending');
   head.append(title,status);
-  const info=document.createElement('p');info.className='small';info.textContent=(m.email||'No email recorded')+' • Joined '+(m.createdAt?m.createdAt.toLocaleDateString():'Date unavailable');
-  const uid=document.createElement('p');uid.className='small';uid.textContent='Account ID: '+m.uid;
   const view=document.createElement('button');view.className='dark';view.textContent='View account details';view.onclick=()=>showMemberDetail(m);
-  item.append(head,info,uid,view);box.append(item);
+  item.append(head,view);box.append(item);
  });
 }
 function showMemberDetail(m){
