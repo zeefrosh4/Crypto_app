@@ -47,6 +47,7 @@
 <div class="card"><h3 class="gold">Security reminders</h3><p class="small">Admin access remains restricted to the verified administrator account. Member records are identified by their Firebase account UID. Wallet requests shown here are demo records only; no real payments or bank details are handled.</p></div>
 </section>
 <section class="admin-panel" id="admin-panel-members">
+<div class="card"><h3 class="gold">Member directory</h3><p class="small">Search registered accounts and inspect their account identifiers and Telegram membership status. Only the verified administrator can access this directory.</p><div class="grid-3"><div class="stat"><div class="stat-label">Registered accounts</div><div class="stat-value" id="memberCount">—</div></div><div class="stat"><div class="stat-label">Active Telegram members</div><div class="stat-value" id="memberActiveCount">—</div></div><div class="stat"><div class="stat-label">Not verified / pending</div><div class="stat-value" id="memberOtherCount">—</div></div></div><input id="memberSearch" type="search" placeholder="Search username, email or account ID" autocomplete="off"><div id="memberDirectoryList" aria-live="polite" class="small">Loading member directory…</div><div id="memberDetail" class="item hidden"></div></div>
 <div class="card" style="border-color:#8a6d22"><h3 class="gold">Telegram webhook</h3><p class="small">Securely register the ZEEFROSH Telegram bot webhook. This uses your signed-in administrator account; no bot token is entered or displayed here.</p><button id="telegramSetup">Register Telegram webhook</button><button class="dark" id="telegramStatus">Check webhook status</button><p id="telegramResult" class="small" aria-live="polite">Webhook setup has not yet been checked.</p></div>
 <div class="card" style="border-color:#8a6d22"><h3 class="gold">Telegram member directory</h3><p class="small">Live membership checks for linked accounts. A pending result means Telegram could not confirm the status; it does not mean the person left. This is a demo platform and does not authorize cash payouts.</p><button class="dark" id="refreshTelegramMembers">Refresh all Telegram membership statuses</button><div id="telegramMembersList" class="small">Open the admin panel to load member statuses.</div></div>
 </section>
@@ -167,16 +168,49 @@ $('telegramStatus').onclick=async()=>{
   finally{$('telegramStatus').disabled=false}
 };
 $('publish').onclick=async()=>{let title=$('taskTitle').value.trim(),reward=Number($('taskReward').value),url=$('taskUrl').value.trim();if(!admin)return;if(!title||reward<=0||!/^https:\/\//i.test(url))return alert('Enter title, positive reward and https link');try{await db.collection('tasks').add({title,reward,url,published:true,createdAt:firebase.firestore.FieldValue.serverTimestamp()});$('taskTitle').value='';$('taskReward').value='';$('taskUrl').value='';alert('Task published')}catch(e){alert(e.message)}};
+let adminMembers=[];
+function renderMemberDirectory(){
+ const box=$('memberDirectoryList');if(!box)return;
+ const term=($('memberSearch').value||'').trim().toLowerCase();
+ const filtered=adminMembers.filter(m=>[m.username,m.email,m.uid,m.telegramUsername].some(v=>String(v||'').toLowerCase().includes(term)));
+ box.textContent='';
+ if(!filtered.length){box.textContent=adminMembers.length?'No members match that search.':'No registered accounts found.';return}
+ filtered.forEach(m=>{
+  const item=document.createElement('div');item.className='item';
+  const head=document.createElement('div');head.className='row';head.style.alignItems='center';
+  const title=document.createElement('b');title.className='gold';title.textContent=m.username||m.email||'Member';
+  const status=document.createElement('span');status.className='pill-tag';status.textContent=({'active':'Telegram active','left-channel':'Left channel','not-linked':'Not linked','check-pending':'Check pending'}[m.membershipStatus]||'Check pending');
+  head.append(title,status);
+  const info=document.createElement('p');info.className='small';info.textContent=(m.email||'No email recorded')+' • Joined '+(m.createdAt?m.createdAt.toLocaleDateString():'Date unavailable');
+  const uid=document.createElement('p');uid.className='small';uid.textContent='Account ID: '+m.uid;
+  const view=document.createElement('button');view.className='dark';view.textContent='View account details';view.onclick=()=>showMemberDetail(m);
+  item.append(head,info,uid,view);box.append(item);
+ });
+}
+function showMemberDetail(m){
+ const box=$('memberDetail');box.classList.remove('hidden');box.textContent='';
+ const h=document.createElement('h3');h.className='gold';h.textContent='Member account details';
+ const add=(label,value)=>{const p=document.createElement('p');p.className='small';p.textContent=label+': '+(value||'Not available');box.append(p)};
+ box.append(h);add('Username',m.username);add('Email',m.email);add('Firebase account ID',m.uid);add('Registration date',m.createdAt?m.createdAt.toLocaleString():'Not available');add('Telegram account',m.telegramUsername?'@'+m.telegramUsername:'Not linked');add('Telegram membership',({'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[m.membershipStatus]||'Check pending'));add('Last membership check',m.checkedAt?new Date(m.checkedAt).toLocaleString():'Not checked');
+ const close=document.createElement('button');close.className='dark';close.textContent='Close details';close.onclick=()=>box.classList.add('hidden');box.append(close);
+}
+$('memberSearch').addEventListener('input',renderMemberDirectory);
 async function loadTelegramAdminMembers(){
- const box=$('telegramMembersList');if(!admin||!me)return;box.textContent='Loading account directory…';
+ const box=$('telegramMembersList');if(!admin||!me)return;
+ box.textContent='Loading Telegram membership statuses…';
+ $('memberDirectoryList').textContent='Loading member directory…';
  try{
   const snap=await db.collection('profiles').get();
-  const users=snap.docs.map(d=>({uid:d.id,email:d.data().email||'',username:d.data().username||''}));
-  if(!users.length){box.textContent='No user profiles found.';return}
+  const users=snap.docs.map(d=>{const x=d.data();return{uid:d.id,email:x.email||'',username:x.username||'',createdAt:x.createdAt&&x.createdAt.toDate?x.createdAt.toDate():null}});
+  if(!users.length){adminMembers=[];renderMemberDirectory();box.textContent='No user profiles found.';$('memberCount').textContent='0';$('memberActiveCount').textContent='0';$('memberOtherCount').textContent='0';return}
   const data=await telegramAdminRequest('/api/telegram/admin-membership','POST',{uids:users.map(u=>u.uid)});
-  const byUid=new Map(data.results.map(x=>[x.uid,x]));box.textContent='';
-  users.forEach(user=>{const st=byUid.get(user.uid)||{membershipStatus:'check-pending'};const item=document.createElement('div');item.className='item';const title=document.createElement('b');title.textContent=user.username||user.email||user.uid;const detail=document.createElement('p');detail.className='small';const label={'active':'Verified — active channel member','left-channel':'Left channel — membership inactive','not-linked':'Telegram not linked','check-pending':'Check pending — unable to confirm'}[st.membershipStatus]||'Check pending';detail.textContent=label+(st.telegramUsername?' • @'+st.telegramUsername:'')+(st.checkedAt?' • Checked '+new Date(st.checkedAt).toLocaleString():'');item.append(title,detail);box.append(item)});
- }catch(e){box.textContent='Could not load Telegram member statuses: '+e.message}
+  const byUid=new Map((data.results||[]).map(x=>[x.uid,x]));
+  adminMembers=users.map(u=>{const st=byUid.get(u.uid)||{membershipStatus:'check-pending'};return{...u,membershipStatus:st.membershipStatus||'check-pending',telegramUsername:st.telegramUsername||'',checkedAt:st.checkedAt||null}});
+  const active=adminMembers.filter(x=>x.membershipStatus==='active').length;
+  $('memberCount').textContent=String(adminMembers.length);$('memberActiveCount').textContent=String(active);$('memberOtherCount').textContent=String(adminMembers.length-active);
+  renderMemberDirectory();
+  box.textContent='Membership status refreshed for '+adminMembers.length+' account(s).';
+ }catch(e){box.textContent='Could not load Telegram member statuses: '+e.message;$('memberDirectoryList').textContent='Could not load member directory: '+e.message}
 }
 $('refreshTelegramMembers').onclick=async()=>{const b=$('refreshTelegramMembers');b.disabled=true;try{await loadTelegramAdminMembers()}finally{b.disabled=false}};
 function renderAdminTasks(){if(!admin)return;$('adminTasks').innerHTML='';tasks.forEach(t=>{let d=document.createElement('div');d.className='item';d.textContent=t.title+' — '+t.reward+' points';let b=document.createElement('button');b.className='red';b.textContent='Delete';b.onclick=()=>db.collection('tasks').doc(t.id).delete();d.append(b);$('adminTasks').append(d)})}
